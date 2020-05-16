@@ -36,11 +36,11 @@ public class DebugMain extends Application {
         root.getChildren().add(canvas);
 
         marble1 = new Marble(simulation,1,1, new Vec3d());
-        marble2 = new Marble(simulation,1,1, new Vec3d(300,0,0));
+        marble2 = new Marble(simulation,1,2, new Vec3d(10,0,1));
 
         simulation.addActors(marble1, marble2);
 
-        marble1.getMovementComponent().addImpulse(new Vec3d(10,0,0));
+        marble1.getMovementComponent().setMovementVector(new Vec3d(50, 0, 0));
 
         new AnimationTimer() {
             long lastTick=0;
@@ -74,13 +74,10 @@ public class DebugMain extends Application {
 
     public static void tick(double deltaTick) {
 
-
         out.println("Marble1 pos: " + marble1.getMovementComponent().getPosition() + ".");
         out.println("Marble2 pos: " + marble2.getMovementComponent().getPosition() + ". \n");
 
         simulation.tick(deltaTick);
-
-
     }
 
 }

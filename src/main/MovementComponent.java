@@ -16,7 +16,7 @@ public class MovementComponent {
     private Actor parent;
 
     private final double gravitation = -9.807; // in m/s^2
-    private final Vec3d gravitationVec = new Vec3d(0, 0, gravitation);  // in m/s^2
+    private final Vec3d gravitationVec = new Vec3d(0, 0, 0);  // in m/s^2
 
     private Vec3d position;  // in m
     private Vec3d position2; // in m used only for Rectangles
@@ -79,6 +79,10 @@ public class MovementComponent {
         this.accelerationVector = this.accelerationVector.add(addAccel);
     }
 
+    public void setMovementVector(@NotNull Vec3d m) {
+        this.movementVector = m;
+    }
+
     public MovementComponent(Actor parent, Vec3d position, Vec3d movementVector, Vec3d accelerationVector) {
         this.parent = parent;
         this.movementVector = new Vec3d(movementVector);
@@ -91,43 +95,52 @@ public class MovementComponent {
         var colliders = this.checkForCollidingActors();
 
         if (colliders.iterator().hasNext()) {
-            this.movementVector = this.velocityAfterCollision(colliders);
+            System.out.println(this);
+
+            this.velocityAfterCollision(colliders.iterator().next());
             this.accelerationVector = new Vec3d(0, 0, 0);
             System.err.println("Asde if");
-        } else {
-            System.err.println("Zwafde if");
-            double fr;
-            //Vec3d gp = new Vec3d(movementVector).mul();
-            Vec3d fg = new Vec3d(0, gravitationVec.length() / 1000 * (mass / 1000), 0);
-
-            position = position.add(
-                    movementVector.scalarMul(deltaTick));
-
-            movementVector = movementVector.add(
-                    accelerationVector.add(gravitationVec).scalarMul(deltaTick));
         }
+
+        // double fr;
+        // Vec3d gp = new Vec3d(movementVector).mul();
+        // Vec3d fg = new Vec3d(0, gravitationVec.length() / 1000 * (mass / 1000), 0);
+
+        position = position.add(
+                movementVector.scalarMul(deltaTick));
+
+        movementVector = movementVector.add(
+                accelerationVector.add(gravitationVec).scalarMul(deltaTick));
 
         return this;
     }
 
 
-    public Vec3d velocityAfterCollision(Iterable<Actor> colliders) {
-        var newVel = new Vec3d(0, 0, 0);
+    public void velocityAfterCollision(Actor collider) {
+        var mC = collider.getMovementComponent();
+        var collVec = mC.getPosition().sub( this.getPosition() ).norm();
 
-        for (var a : colliders) {
-            var mC = a.getMovementComponent();
+        if (Math.acos( this.getMovementVector().dot(collVec) / this.getMovementVector().length() ) <= Math.PI/2) {
+            // kann geschwindigkeit abgeben (this -> collider)
 
-            var numerator = this.getMovementVector()
+            var orthVel1 = collVec.scalarMul( collVec.dot(this.getMovementVector()) );
+            var orthVel2 = collVec.scalarMul( collVec.dot(mC.getMovementVector()) );
+
+            var numerator = orthVel1
                     .scalarMul(this.getMass())
-                    .add(mC.getMovementVector()
+                    .add(orthVel2
                             .scalarMul(mC.getMass()));
 
             var denominator = this.getMass() + mC.getMass();
 
-            newVel = newVel.add( numerator.scalarMul(2/denominator).sub(this.getMovementVector()) );
-        }
+            var v1New = numerator.scalarMul(2/denominator).sub(orthVel1);
+            var v2New = numerator.scalarMul(2/denominator).sub(orthVel2);
 
-        return newVel;
+            System.out.println("this mov: " + this.getMovementVector().length());
+
+            this.setMovementVector(v1New.add( this.getMovementVector().sub(orthVel1) ));
+            mC.setMovementVector(v2New.add( mC.getMovementVector().sub(orthVel2) ));
+        }
     }
 
     public Iterable<Actor> checkForCollidingActors() {

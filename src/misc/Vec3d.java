@@ -47,21 +47,21 @@ public class Vec3d {
     }
 
     public Vec3d add(@NotNull Vec3d other) {
-        var ret = Vec3d.from(other);
+        var ret = Vec3d.from(this);
 
-        ret.x += this.x;
-        ret.y += this.y;
-        ret.z += this.z;
+        ret.x += other.x;
+        ret.y += other.y;
+        ret.z += other.z;
 
         return ret;
     }
 
     public Vec3d sub(@NotNull Vec3d other) {
-        var ret = Vec3d.from(other);
+        var ret = Vec3d.from(this);
 
-        ret.x -= this.x;
-        ret.y -= this.y;
-        ret.z -= this.z;
+        ret.x -= other.x;
+        ret.y -= other.y;
+        ret.z -= other.z;
 
         return ret;
     }
@@ -76,6 +76,10 @@ public class Vec3d {
         var c = this.x * other.y - this.y * other.x;
 
         return new Vec3d(a, b, c);
+    }
+
+    public Vec3d norm() {
+        return this.scalarDiv(this.length());
     }
 
     public Vec3d scalarMul(double lambda) {
