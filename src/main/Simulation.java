@@ -1,17 +1,18 @@
 package main;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class Simulation {
 
-    private Stack<Actor> actors;
+    private ArrayList<Actor> actors;
 
 
     public Simulation() {
-        actors = new Stack<Actor>();
+        actors = new ArrayList<Actor>();
     }
 
-    public Stack<Actor> getActors() {
+    public ArrayList<Actor> getActors() {
         return actors;
     }
     public Actor[] getActorsAsArray() {
