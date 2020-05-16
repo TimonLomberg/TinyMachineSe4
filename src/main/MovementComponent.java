@@ -2,10 +2,9 @@ package main;
 
 import enums.CollisionObjectType;
 import misc.Utils;
+import misc.Vec3d;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Stack;
 
 
 /**

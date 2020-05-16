@@ -1,7 +1,5 @@
 package misc;
 
-import main.Vec3d;
-
 import enums.CollisionObjectType;
 import exceptions.WrongCollisionObjectTypeException;
 import main.Actor;
