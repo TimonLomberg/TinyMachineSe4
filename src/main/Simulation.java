@@ -23,4 +23,10 @@ public class Simulation {
     public boolean removeActor(Actor a) {
         return this.actors.remove(a);
     }
+
+    public void tick(double dT) {
+        for (var a : this.getActors()) {
+            a.getMovementComponent().update(dT);
+        }
+    }
 }
