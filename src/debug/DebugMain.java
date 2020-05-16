@@ -1,28 +1,48 @@
 package debug;
 
-import com.sun.javafx.geom.Vec3d;
 import javafx.animation.AnimationTimer;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 import main.Simulation;
 import main.customActors.Marble;
+import misc.Vec3d;
+
+import static java.lang.System.out;
 
 
-public class DebugMain {
+
+public class DebugMain extends Application {
 
     static Simulation simulation;
 
     static Marble marble1, marble2;
 
-    static final double tickLength = 0.05;
+    private static final double tickLength = 100.0;
+
+    @Override
+    public void start(Stage primaryStage) throws Exception{
+
+        simulation = new Simulation();
 
 
-    public static void main(String[] args) {
 
-        simulation = new Simulation()
+        AnchorPane root = new AnchorPane();
+        Canvas canvas = new Canvas();
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        root.getChildren().add(canvas);
 
-        Marble marble1 = new Marble(simulation, 1, 0.03, new Vec3d(0,0,0));
+        marble1 = new Marble(simulation,1,1, new Vec3d());
+        marble2 = new Marble(simulation,1,1, new Vec3d(300,0,0));
+
+        simulation.addActors(marble1, marble2);
+
+        marble1.getMovementComponent().addImpulse(new Vec3d(10,0,0));
 
         new AnimationTimer() {
-
             long lastTick=0;
 
             public void handle(long now) {
@@ -34,15 +54,32 @@ public class DebugMain {
 
                 if(now - lastTick > 1000000000 / tickLength ) {
                     lastTick = now;
-                    tick();
+                    tick(1/tickLength);
                 }
             }
-
         }.start();
 
+
+
+        Scene scene = new Scene(root, 600, 400);
+        primaryStage.setTitle("Hello World");
+        primaryStage.setScene(scene);
+        //primaryStage.show();
     }
 
-    public static void tick() {
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    public static void tick(double deltaTick) {
+
+
+        out.println("Marble1 pos: " + marble1.getMovementComponent().getPosition() + ".");
+        out.println("Marble2 pos: " + marble2.getMovementComponent().getPosition() + ". \n");
+
+        simulation.tick(deltaTick);
+
 
     }
 

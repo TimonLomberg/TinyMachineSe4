@@ -34,7 +34,7 @@ public class Actor {
     public Actor(Simulation simulation, CollisionObjectType objectType){
         this.simulation = simulation;
         this.objectType = objectType;
-        movementComponent  = new MovementComponent(this, new Vec3d(0,0,0),0.0,0.0,
+        movementComponent  = new MovementComponent(this, new Vec3d(0,0,0),
                 new Vec3d(0,0,0),new Vec3d(0,0,0));
     }
 
