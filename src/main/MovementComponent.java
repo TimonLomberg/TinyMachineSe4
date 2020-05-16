@@ -1,6 +1,12 @@
 package main;
 
-import com.sun.javafx.geom.Vec3d;
+import enums.CollisionObjectType;
+import misc.Utils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Stack;
+
 
 /**
  * Movement Component for Actors
@@ -16,7 +22,7 @@ public class MovementComponent {
     private Vec3d position2; // in mm used only for Rectangles
     private Vec3d movementVector;  // in mm
     private Vec3d accelerationVector;  // in mm
-    private double weight;  // in g
+    private double mass;  // in g
     private double diameter;  // in mm used only for Spheres
 
 
@@ -31,8 +37,8 @@ public class MovementComponent {
         this.position2 = position2;
     }
 
-    public void setWeight(double weight) {
-        this.weight = weight;
+    public void setMass(double mass) {
+        this.mass = mass;
     }
 
     public void setDiameter(double diameter) {
@@ -48,8 +54,8 @@ public class MovementComponent {
         return accelerationVector;
     }
 
-    public double getWeight() {
-        return weight;
+    public double getMass() {
+        return this.mass;
     }
 
     public double getSpeed() {
@@ -84,29 +90,137 @@ public class MovementComponent {
 
     public MovementComponent update(double deltaTick) {
 
+        var colliders = this.checkForCollidingActors();
 
-        double fr;
-        //Vec3d gp = new Vec3d(movementVector).mul();
-        Vec3d fg = new Vec3d(0, gravitationVec.length() / 1000 * (weight / 1000),0);
+        if (colliders.iterator().hasNext()) {
+            this.movementVector = this.velocityAfterCollision(colliders);
+            this.accelerationVector = new Vec3d(0, 0, 0);
+        } else {
 
+            double fr;
+            //Vec3d gp = new Vec3d(movementVector).mul();
+            Vec3d fg = new Vec3d(0, gravitationVec.length() / 1000 * (mass / 1000), 0);
 
-        Vec3d newPosition = new Vec3d();
+            position = position.add(
+                    movementVector.scalarMul(deltaTick));
 
-        position.x = position.x + (movementVector.x * deltaTick);
-        position.y = position.y + (movementVector.y * deltaTick);
-        position.z = position.z + (movementVector.z * deltaTick);
+            movementVector = movementVector.add(
+                    accelerationVector.add(gravitationVec).scalarMul(deltaTick));
+        }
 
-        movementVector.x = movementVector.x + accelerationVector.x * deltaTick;
-        movementVector.y = movementVector.y + accelerationVector.y * deltaTick;
-        movementVector.z = movementVector.z + accelerationVector.z * deltaTick;
+        this.speed = movementVector.length();
+        this.acceleration = accelerationVector.length();
 
-        speed = movementVector.length();
-        /*
-        movementVector.x = movementVector.x * (speed / movementVector.length());
-        movementVector.y = movementVector.y * (speed / movementVector.length());
-        movementVector.z = movementVector.z * (speed / movementVector.length());
-        */
         return this;
+    }
+
+
+    public Vec3d velocityAfterCollision(Iterable<Actor> colliders) {
+        var newVel = new Vec3d(0, 0, 0);
+
+        for (var a : colliders) {
+            var mC = a.getMovementComponent();
+
+            var numerator = this.getMovementVector()
+                    .scalarMul(this.getMass())
+                    .add(mC.getMovementVector()
+                            .scalarMul(mC.getMass()));
+
+            var denominator = this.getMass() + mC.getMass();
+
+            newVel = newVel.add( numerator.scalarMul(2/denominator).sub(this.getMovementVector()) );
+        }
+
+        return newVel;
+    }
+
+    public Iterable<Actor> checkForCollidingActors() {
+        var cActors = new ArrayList<Actor>();
+
+        for(Actor o : parent.getSimulation().getActors()) {
+            switch (o.getObjectType()) {
+
+                // Other Object is Sphere
+                case Sphere -> {
+                    switch (parent.getObjectType()) {
+                        // Other is Sphere + This is Sphere Collision
+                        case Sphere -> {
+                            if(Utils.distance(this.getPosition(), o.getMovementComponent().getPosition())
+                                    <= this.getDiameter()/2 + o.getMovementComponent().getDiameter()/2) {
+                                cActors.add(o);
+                            }
+                        }
+                        // Other is Sphere + This is Rectangle Collision
+                        case Rectangle -> {
+
+                        }
+                        // Other is Sphere + This is Point Collision
+                        case Point -> {
+                            if(Utils.distance(o.getMovementComponent().getPosition(), this.getPosition())
+                                    < o.getMovementComponent().getDiameter()/2) {
+                                cActors.add(o);
+                            }
+                        }
+                        default -> {}
+                    }
+                }
+
+                // Other Object is Rectangle
+                case Rectangle -> {
+                    switch (parent.getObjectType()) {
+                        // Other is Rectangle + This is Sphere Collision
+                        case Sphere -> {
+
+                        }
+                        // Other is Rectangle + This is Rectangle Collision
+                        case Rectangle -> {
+                            if(Utils.rectIntersect(o, parent)) {
+                                cActors.add(o);
+                            }
+                        }
+                        // Other is Rectangle + This is Point Collision
+                        case Point -> {
+                            if(Utils.pointInRect(this.getPosition(), o)) {
+                                cActors.add(o);
+                            }
+                        }
+                    }
+
+                }
+
+                // Other Object is Point
+                case Point -> {
+                    switch (parent.getObjectType()) {
+                        // Other is Point + This is Sphere Collision
+                        case Sphere -> {
+                            if(Utils.distance(this.getPosition(), o.getMovementComponent().getPosition())
+                                    < this.getDiameter()/2) {
+                                cActors.add(o);
+                            }
+                        }
+                        // Other is Point + This is Rectangle Collision
+                        case Rectangle -> {
+                            if(Utils.pointInRect(o.getMovementComponent().getPosition(), parent)) {
+                                cActors.add(o);
+                            }
+                        }
+                        // Other is Point + This is Point Collision
+                        case Point -> {
+                            if(Utils.distance(this.getPosition(), o.getMovementComponent().getPosition()) == 0.0) {
+                                cActors.add(o);
+                            }
+                        }
+                    }
+                }
+
+                default -> {
+                    System.err.println("Actor has invalid collision type of " + o.getObjectType());
+                    throw new EnumConstantNotPresentException(CollisionObjectType.class, o.getObjectType().toString());
+                }
+
+            }
+        }
+        return cActors;
     }
 
 }
