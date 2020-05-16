@@ -1,6 +1,7 @@
 package misc;
 
-import com.sun.javafx.geom.Vec3d;
+import main.Vec3d;
+
 import enums.CollisionObjectType;
 import exceptions.WrongCollisionObjectTypeException;
 import main.Actor;
@@ -11,9 +12,7 @@ public final class Utils {
 
 
     public static double distance(Vec3d v1, Vec3d v2) {
-        Vec3d out = new Vec3d(v2);
-        out.sub(v1);
-        return out.length();
+        return v2.sub(v1).length();
     }
 
     public static boolean inRange(double value, double min, double max) {
