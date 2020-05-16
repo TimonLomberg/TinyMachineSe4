@@ -3,6 +3,7 @@ package main;
 import enums.CollisionObjectType;
 import misc.Utils;
 import misc.Vec3d;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -24,9 +25,6 @@ public class MovementComponent {
     private double mass;  // in kg
     private double diameter;  // in m used only for Spheres
 
-
-    private double speed;
-    private double acceleration;
 
     public void setPosition(Vec3d position) {
         this.position = position;
@@ -58,11 +56,11 @@ public class MovementComponent {
     }
 
     public double getSpeed() {
-        return speed;
+        return this.movementVector.length();
     }
 
     public double getAcceleration() {
-        return acceleration;
+        return this.accelerationVector.length();
     }
 
     public Vec3d getPosition() {
@@ -76,16 +74,17 @@ public class MovementComponent {
         return diameter;
     }
 
-    public MovementComponent(Actor parent, Vec3d position, double speed, double acceleration, Vec3d movementVector, Vec3d accelerationVector) {
+    public void addImpulse(@NotNull Vec3d f) {
+        var addAccel = f.scalarDiv(this.getMass());
+        this.accelerationVector = this.accelerationVector.add(addAccel);
+    }
+
+    public MovementComponent(Actor parent, Vec3d position, Vec3d movementVector, Vec3d accelerationVector) {
         this.parent = parent;
-        this.speed = speed;
-        this.acceleration = acceleration;
         this.movementVector = new Vec3d(movementVector);
         this.accelerationVector = new Vec3d(accelerationVector);
         this.position = new Vec3d(position);
     }
-
-
 
     public MovementComponent update(double deltaTick) {
 
@@ -106,9 +105,6 @@ public class MovementComponent {
             movementVector = movementVector.add(
                     accelerationVector.add(gravitationVec).scalarMul(deltaTick));
         }
-
-        this.speed = movementVector.length();
-        this.acceleration = accelerationVector.length();
 
         return this;
     }
