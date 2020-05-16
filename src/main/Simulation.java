@@ -1,6 +1,7 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Simulation {
 
@@ -15,8 +16,8 @@ public class Simulation {
         return this.actors;
     }
 
-    public void addActor(Actor a) {
-        this.actors.add(a);
+    public void addActors(Actor... actors) {
+        Collections.addAll(this.actors, actors);
     }
 
     public boolean removeActor(Actor a) {
