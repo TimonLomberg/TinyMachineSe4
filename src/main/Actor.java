@@ -1,6 +1,5 @@
 package main;
 
-import com.sun.javafx.geom.Vec3d;
 import enums.CollisionObjectType;
 
 public class Actor {
