@@ -1,7 +1,6 @@
 package main;
 
 import java.util.ArrayList;
-import java.util.Stack;
 
 public class Simulation {
 
@@ -9,14 +8,18 @@ public class Simulation {
 
 
     public Simulation() {
-        actors = new ArrayList<Actor>();
+        actors = new ArrayList<>();
     }
 
-    public ArrayList<Actor> getActors() {
-        return actors;
+    public Iterable<Actor> getActors() {
+        return this.actors;
     }
-    public Actor[] getActorsAsArray() {
-        Actor[] out = new Actor[actors.size()];
-        return actors.toArray(out);
+
+    public void addActor(Actor a) {
+        this.actors.add(a);
+    }
+
+    public boolean removeActor(Actor a) {
+        return this.actors.remove(a);
     }
 }
