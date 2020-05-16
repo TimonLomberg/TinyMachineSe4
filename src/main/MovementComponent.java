@@ -14,15 +14,15 @@ public class MovementComponent {
 
     private Actor parent;
 
-    private final double gravitation = 9807; // in mm
-    private final Vec3d gravitationVec = new Vec3d(0,-9807,0);  // in mm
+    private final double gravitation = 9.807; // in m/s^2
+    private final Vec3d gravitationVec = new Vec3d(0, gravitation,0);  // in m/s^2
 
-    private Vec3d position;  // in mm
-    private Vec3d position2; // in mm used only for Rectangles
-    private Vec3d movementVector;  // in mm
-    private Vec3d accelerationVector;  // in mm
-    private double mass;  // in g
-    private double diameter;  // in mm used only for Spheres
+    private Vec3d position;  // in m
+    private Vec3d position2; // in m used only for Rectangles
+    private Vec3d movementVector;  // in m
+    private Vec3d accelerationVector;  // in m
+    private double mass;  // in kg
+    private double diameter;  // in m used only for Spheres
 
 
     private double speed;
