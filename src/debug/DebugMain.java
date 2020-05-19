@@ -27,7 +27,7 @@ public class DebugMain extends Application {
 
     static Simulation simulation;
 
-    static Marble marble1, marble2;
+    static Marble marble1, marble2, marble3;
 
     private static final double tickLength = 100.0;
 
@@ -50,12 +50,16 @@ public class DebugMain extends Application {
 
 
         marble1 = new Marble(simulation, 1, 100, new Vec3d());
-        marble2 = new Marble(simulation, 1, 100, new Vec3d(10, 0, 1));
-        marble1.getMovementComponent().setPosition(new Vec3d(100, 0, 100));
-        marble2.getMovementComponent().setPosition(new Vec3d(400, 0, 100));
-        simulation.addActors(marble1, marble2);
+        marble2 = new Marble(simulation, 1, 100, new Vec3d());
+        marble3 = new Marble(simulation, 1, 100, new Vec3d());
+        marble1.getMovementComponent().setPosition(new Vec3d(100, 0, -300));
+        marble2.getMovementComponent().setPosition(new Vec3d(400, 0, -300));
+        marble3.getMovementComponent().setPosition(new Vec3d(250, 0, -800));
+        simulation.addActors(marble1, marble2, marble3);
 
-        marble1.getMovementComponent().setMovementVector(new Vec3d(50, 0, 0));
+        marble1.getMovementComponent().setMovementVector(new Vec3d(80, 0, -80));
+        marble2.getMovementComponent().setMovementVector(new Vec3d(-80, 0, -80));
+        marble3.getMovementComponent().setMovementVector(new Vec3d(50, 0, 50));
 
         new AnimationTimer() {
             long lastTick = 0;
@@ -100,23 +104,29 @@ public class DebugMain extends Application {
 
 
          */
-        out.println("Marble1 pos: " + marble1.getMovementComponent().getPosition() + ".");
-        out.println("Marble2 pos: " + marble2.getMovementComponent().getPosition() + ". \n");
+        //out.println("Marble1 pos: " + marble1.getMovementComponent().getPosition() + ".");
+        //out.println("Marble2 pos: " + marble2.getMovementComponent().getPosition() + ". \n");
 
         simulation.tick(deltaTick);
     }
 
     static void drawShapes(GraphicsContext gc) {
-        gc.setFill(Color.RED);
-        
+
+
 
         MovementComponent ma1Mc = marble1.getMovementComponent();
         MovementComponent ma2Mc = marble2.getMovementComponent();
+        MovementComponent ma3Mc = marble3.getMovementComponent();
 
-        gc.fillOval(ma1Mc.getPosition().x - ma1Mc.getDiameter() / 2, (ma1Mc.getPosition().y - ma1Mc.getDiameter() / 2)* -1,
+        gc.setFill(Color.RED);
+        gc.fillOval(ma1Mc.getPosition().x - ma1Mc.getDiameter() / 2, (ma1Mc.getPosition().z*-1) - ma1Mc.getDiameter() / 2,
                 ma1Mc.getDiameter() , ma1Mc.getDiameter() );
-        gc.fillOval(ma2Mc.getPosition().x - ma2Mc.getDiameter() / 2, (ma2Mc.getPosition().y - ma2Mc.getDiameter() / 2)* -1,
+        gc.setFill(Color.GREEN);
+        gc.fillOval(ma2Mc.getPosition().x - ma2Mc.getDiameter() / 2, (ma2Mc.getPosition().z*-1) - ma2Mc.getDiameter() / 2,
                 ma2Mc.getDiameter() , ma2Mc.getDiameter() );
+        gc.setFill(Color.BLUE);
+        gc.fillOval(ma3Mc.getPosition().x - ma3Mc.getDiameter() / 2, (ma3Mc.getPosition().z*-1) - ma3Mc.getDiameter() / 2,
+                ma3Mc.getDiameter() , ma3Mc.getDiameter() );
     }
 
 }
