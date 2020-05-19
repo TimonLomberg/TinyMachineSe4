@@ -1,10 +1,6 @@
 package misc;
 
-<<<<<<< Updated upstream
-
-=======
 import entities.Rectangle;
->>>>>>> Stashed changes
 
 public final class Utils {
 
