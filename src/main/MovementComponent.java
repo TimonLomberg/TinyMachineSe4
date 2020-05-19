@@ -66,6 +66,7 @@ public class MovementComponent {
     public Vec3d getPosition() {
         return this.position;
     }
+
     public Vec3d getPosition2() {
         return this.position2;
     }
@@ -118,13 +119,13 @@ public class MovementComponent {
 
     public void velocityAfterCollision(Actor collider) {
         var mC = collider.getMovementComponent();
-        var collVec = mC.getPosition().sub( this.getPosition() ).norm();
+        var collVec = mC.getPosition().sub(this.getPosition()).norm();
 
-        if (Math.acos( this.getMovementVector().dot(collVec) / this.getMovementVector().length() ) <= Math.PI/2) {
+        if (Math.acos(this.getMovementVector().dot(collVec) / this.getMovementVector().length()) <= Math.PI / 2) {
             // kann geschwindigkeit abgeben (this -> collider)
 
-            var orthVel1 = collVec.scalarMul( collVec.dot(this.getMovementVector()) );
-            var orthVel2 = collVec.scalarMul( collVec.dot(mC.getMovementVector()) );
+            var orthVel1 = collVec.scalarMul(collVec.dot(this.getMovementVector()));
+            var orthVel2 = collVec.scalarMul(collVec.dot(mC.getMovementVector()));
 
             var numerator = orthVel1
                     .scalarMul(this.getMass())
@@ -133,20 +134,20 @@ public class MovementComponent {
 
             var denominator = this.getMass() + mC.getMass();
 
-            var v1New = numerator.scalarMul(2/denominator).sub(orthVel1);
-            var v2New = numerator.scalarMul(2/denominator).sub(orthVel2);
+            var v1New = numerator.scalarMul(2 / denominator).sub(orthVel1);
+            var v2New = numerator.scalarMul(2 / denominator).sub(orthVel2);
 
             System.out.println("this mov: " + this.getMovementVector().length());
 
-            this.setMovementVector(v1New.add( this.getMovementVector().sub(orthVel1) ));
-            mC.setMovementVector(v2New.add( mC.getMovementVector().sub(orthVel2) ));
+            this.setMovementVector(v1New.add(this.getMovementVector().sub(orthVel1)));
+            mC.setMovementVector(v2New.add(mC.getMovementVector().sub(orthVel2)));
         }
     }
 
     public Iterable<Actor> checkForCollidingActors() {
         var cActors = new ArrayList<Actor>();
 
-        for(Actor o : parent.getSimulation().getActors()) {
+        for (Actor o : parent.getSimulation().getActors()) {
             if (o != parent) {
                 switch (o.getObjectType()) {
 
@@ -155,8 +156,8 @@ public class MovementComponent {
                         switch (parent.getObjectType()) {
                             // Other is Sphere + This is Sphere Collision
                             case Sphere -> {
-                                if(Utils.distance(this.getPosition(), o.getMovementComponent().getPosition())
-                                        <= this.getDiameter()/2 + o.getMovementComponent().getDiameter()/2) {
+                                if (Utils.distance(this.getPosition(), o.getMovementComponent().getPosition())
+                                        <= this.getDiameter() / 2 + o.getMovementComponent().getDiameter() / 2) {
                                     cActors.add(o);
                                 }
                             }
@@ -166,12 +167,13 @@ public class MovementComponent {
                             }
                             // Other is Sphere + This is Point Collision
                             case Point -> {
-                                if(Utils.distance(o.getMovementComponent().getPosition(), this.getPosition())
-                                        < o.getMovementComponent().getDiameter()/2) {
+                                if (Utils.distance(o.getMovementComponent().getPosition(), this.getPosition())
+                                        < o.getMovementComponent().getDiameter() / 2) {
                                     cActors.add(o);
                                 }
                             }
-                            default -> {}
+                            default -> {
+                            }
                         }
                     }
 
@@ -184,13 +186,13 @@ public class MovementComponent {
                             }
                             // Other is Rectangle + This is Rectangle Collision
                             case Rectangle -> {
-                                if(Utils.rectIntersect(o, parent)) {
+                                if (Utils.rectIntersect(o, parent)) {
                                     cActors.add(o);
                                 }
                             }
                             // Other is Rectangle + This is Point Collision
                             case Point -> {
-                                if(Utils.pointInRect(this.getPosition(), o)) {
+                                if (Utils.pointInRect(this.getPosition(), o)) {
                                     cActors.add(o);
                                 }
                             }
@@ -203,20 +205,20 @@ public class MovementComponent {
                         switch (parent.getObjectType()) {
                             // Other is Point + This is Sphere Collision
                             case Sphere -> {
-                                if(Utils.distance(this.getPosition(), o.getMovementComponent().getPosition())
-                                        < this.getDiameter()/2) {
+                                if (Utils.distance(this.getPosition(), o.getMovementComponent().getPosition())
+                                        < this.getDiameter() / 2) {
                                     cActors.add(o);
                                 }
                             }
                             // Other is Point + This is Rectangle Collision
                             case Rectangle -> {
-                                if(Utils.pointInRect(o.getMovementComponent().getPosition(), parent)) {
+                                if (Utils.pointInRect(o.getMovementComponent().getPosition(), parent)) {
                                     cActors.add(o);
                                 }
                             }
                             // Other is Point + This is Point Collision
                             case Point -> {
-                                if(Utils.distance(this.getPosition(), o.getMovementComponent().getPosition()) == 0.0) {
+                                if (Utils.distance(this.getPosition(), o.getMovementComponent().getPosition()) == 0.0) {
                                     cActors.add(o);
                                 }
                             }

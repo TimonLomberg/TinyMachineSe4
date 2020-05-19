@@ -6,7 +6,9 @@ import main.Actor;
 
 public final class Utils {
 
-    private Utils(){ throw new UnsupportedOperationException();}
+    private Utils() {
+        throw new UnsupportedOperationException();
+    }
 
 
     public static double distance(Vec3d v1, Vec3d v2) {
@@ -17,9 +19,9 @@ public final class Utils {
         return value >= Math.min(min, max) && value <= Math.max(min, max);
     }
 
-    public static boolean pointInRect(Vec3d point, Actor rect){
-        try{
-            if(rect.getObjectType()  == CollisionObjectType.Rectangle) {
+    public static boolean pointInRect(Vec3d point, Actor rect) {
+        try {
+            if (rect.getObjectType() == CollisionObjectType.Rectangle) {
                 return Utils.inRange(point.x, rect.getMovementComponent().getPosition().x, rect.getMovementComponent().getPosition2().x) &&
                         Utils.inRange(point.y, rect.getMovementComponent().getPosition().y, rect.getMovementComponent().getPosition2().y) &&
                         Utils.inRange(point.z, rect.getMovementComponent().getPosition().z, rect.getMovementComponent().getPosition2().z);
@@ -39,11 +41,11 @@ public final class Utils {
     }
 
     public static boolean rectIntersect(Actor r0, Actor r1) {
-        try{
-            if(r0.getObjectType()  == CollisionObjectType.Rectangle ) {
-                if(r1.getObjectType()  == CollisionObjectType.Rectangle) {
+        try {
+            if (r0.getObjectType() == CollisionObjectType.Rectangle) {
+                if (r1.getObjectType() == CollisionObjectType.Rectangle) {
                     return rangeIntersect(r0.getMovementComponent().getPosition().x, r0.getMovementComponent().getPosition2().x,
-                                    r1.getMovementComponent().getPosition().x, r1.getMovementComponent().getPosition2().x) &&
+                            r1.getMovementComponent().getPosition().x, r1.getMovementComponent().getPosition2().x) &&
                             rangeIntersect(r0.getMovementComponent().getPosition().y, r0.getMovementComponent().getPosition2().y,
                                     r1.getMovementComponent().getPosition().y, r1.getMovementComponent().getPosition2().y) &&
                             rangeIntersect(r0.getMovementComponent().getPosition().z, r0.getMovementComponent().getPosition2().z,

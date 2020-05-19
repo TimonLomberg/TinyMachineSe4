@@ -2,25 +2,17 @@ package debug;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import main.Actor;
 import main.MovementComponent;
 import main.Simulation;
 import main.customActors.Marble;
 import misc.Vec3d;
-
-import static java.lang.System.out;
 
 
 public class DebugMain extends Application {
@@ -48,18 +40,17 @@ public class DebugMain extends Application {
         primaryStage.show();
 
 
-
         marble1 = new Marble(simulation, 1, 100, new Vec3d());
         marble2 = new Marble(simulation, 1, 100, new Vec3d());
         marble3 = new Marble(simulation, 1, 100, new Vec3d());
         marble1.getMovementComponent().setPosition(new Vec3d(100, 0, -300));
         marble2.getMovementComponent().setPosition(new Vec3d(400, 0, -300));
-        marble3.getMovementComponent().setPosition(new Vec3d(250, 0, -800));
+        marble3.getMovementComponent().setPosition(new Vec3d(250, 0, -600));
         simulation.addActors(marble1, marble2, marble3);
 
         marble1.getMovementComponent().setMovementVector(new Vec3d(80, 0, -80));
         marble2.getMovementComponent().setMovementVector(new Vec3d(-80, 0, -80));
-        marble3.getMovementComponent().setMovementVector(new Vec3d(50, 0, 50));
+        marble3.getMovementComponent().setMovementVector(new Vec3d(0, 0, 95));
 
         new AnimationTimer() {
             long lastTick = 0;
@@ -90,22 +81,8 @@ public class DebugMain extends Application {
 
 
         gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-        drawShapes(gc);
+        drawAllShapes(gc, simulation);
 
-        /*
-        MovementComponent ma1Mc = marble1.getMovementComponent();
-        MovementComponent ma2Mc = marble2.getMovementComponent();
-
-        gc.setFill(Color.RED);
-        gc.fillOval(ma1Mc.getPosition().x - ma1Mc.getDiameter() / 2, ma1Mc.getPosition().y - ma1Mc.getDiameter() / 2,
-                ma1Mc.getDiameter() / 2, ma1Mc.getDiameter() / 2);
-        gc.fillOval(ma2Mc.getPosition().x - ma2Mc.getDiameter() / 2, ma2Mc.getPosition().y - ma2Mc.getDiameter() / 2,
-                ma2Mc.getDiameter() / 2, ma2Mc.getDiameter() / 2);
-
-
-         */
-        //out.println("Marble1 pos: " + marble1.getMovementComponent().getPosition() + ".");
-        //out.println("Marble2 pos: " + marble2.getMovementComponent().getPosition() + ". \n");
 
         simulation.tick(deltaTick);
     }
@@ -113,20 +90,51 @@ public class DebugMain extends Application {
     static void drawShapes(GraphicsContext gc) {
 
 
-
         MovementComponent ma1Mc = marble1.getMovementComponent();
         MovementComponent ma2Mc = marble2.getMovementComponent();
         MovementComponent ma3Mc = marble3.getMovementComponent();
 
-        gc.setFill(Color.RED);
-        gc.fillOval(ma1Mc.getPosition().x - ma1Mc.getDiameter() / 2, (ma1Mc.getPosition().z*-1) - ma1Mc.getDiameter() / 2,
-                ma1Mc.getDiameter() , ma1Mc.getDiameter() );
-        gc.setFill(Color.GREEN);
-        gc.fillOval(ma2Mc.getPosition().x - ma2Mc.getDiameter() / 2, (ma2Mc.getPosition().z*-1) - ma2Mc.getDiameter() / 2,
-                ma2Mc.getDiameter() , ma2Mc.getDiameter() );
-        gc.setFill(Color.BLUE);
-        gc.fillOval(ma3Mc.getPosition().x - ma3Mc.getDiameter() / 2, (ma3Mc.getPosition().z*-1) - ma3Mc.getDiameter() / 2,
-                ma3Mc.getDiameter() , ma3Mc.getDiameter() );
+        drawMarble(gc, marble1, Color.RED);
+        drawMarble(gc, marble2, Color.GREEN);
+        drawMarble(gc, marble3, Color.BLUE);
+    }
+
+    static void drawMarble(GraphicsContext gc, Marble m) {
+        MovementComponent ma1Mc = m.getMovementComponent();
+        gc.fillOval(ma1Mc.getPosition().x - ma1Mc.getDiameter() / 2, (ma1Mc.getPosition().z * -1) - ma1Mc.getDiameter() / 2,
+                ma1Mc.getDiameter(), ma1Mc.getDiameter());
+    }
+
+    static void drawMarble(GraphicsContext gc, Marble m, Color color) {
+        Color oldColor = (Color) gc.getFill();
+        gc.setFill(color);
+        MovementComponent ma1Mc = m.getMovementComponent();
+        gc.fillOval(ma1Mc.getPosition().x - ma1Mc.getDiameter() / 2, (ma1Mc.getPosition().z * -1) - ma1Mc.getDiameter() / 2,
+                ma1Mc.getDiameter(), ma1Mc.getDiameter());
+        gc.setFill(oldColor);
+    }
+
+    public static void drawAllShapes(GraphicsContext gc, Simulation sim) {
+
+        for (Actor a : sim.getActors()) {
+            MovementComponent mc = a.getMovementComponent();
+            switch (a.getObjectType()) {
+                case Sphere -> {
+                    gc.setFill(Color.LIGHTSKYBLUE);
+                    gc.fillOval(mc.getPosition().x - mc.getDiameter() / 2, (mc.getPosition().z * -1) - mc.getDiameter() / 2,
+                            mc.getDiameter(), mc.getDiameter());
+                }
+                case Rectangle -> {
+                    gc.setFill(Color.DARKOLIVEGREEN);
+                    gc.fillRect(mc.getPosition().x, mc.getPosition().z * -1, mc.getPosition2().x - mc.getPosition().x,
+                            mc.getPosition2().z * -1 - mc.getPosition().z * -1);
+                }
+
+                default -> {
+                }
+            }
+        }
+
     }
 
 }
