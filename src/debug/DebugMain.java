@@ -15,13 +15,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import main.MovementComponent;
 import main.Simulation;
 import misc.Vec3d;
 
 import entities.*;
-
-import static java.lang.System.out;
 
 
 public class DebugMain extends Application {
