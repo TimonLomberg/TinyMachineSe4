@@ -14,11 +14,15 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
+import java.util.Scanner;
 import main.Simulation;
 import misc.Vec3d;
 
 import entities.*;
+
+import java.util.Scanner;
 
 
 public class DebugMain extends Application {
@@ -28,6 +32,9 @@ public class DebugMain extends Application {
     static Marble marble1, marble2;
 
     private static final double tickLength = 100.0;
+    private static final double canvasScaleX = 500;
+    private static final double canvasScaleY = 500;
+
 
 
     @Override
@@ -44,19 +51,21 @@ public class DebugMain extends Application {
         primaryStage.setTitle("Debug");
         primaryStage.setScene(scene);
         primaryStage.show();
+        canvas.getGraphicsContext2D().scale(canvasScaleX, canvasScaleY);
 
 
 
-        marble1 = new Marble(Vec3d.nullvec(), Vec3d.nullvec(), Vec3d.nullvec(), 1, 100);
-        marble2 = new Marble(new Vec3d(10, 0, 1), Vec3d.nullvec(), Vec3d.nullvec(), 1, 100);
-
-        marble1.setPos(new Vec3d(100, 0, 100));
-        marble2.setPos(new Vec3d(400, 0, 100));
+        marble1 = new Marble(1, 0.1);
+        marble2 = new Marble(1, 0.1);
+        marble1.setPos(new Vec3d(.2, 0, -0.3));
+        marble2.setPos(new Vec3d(.5, 0, -0.3));
         simulation.addEntities(marble1, marble2);
 
-        marble1.setVelo(new Vec3d(50, 0, 0));
+        marble1.setVelo(new Vec3d(0.05, 0, 0));
 
-        new AnimationTimer() {
+
+        drawShapes(gc);
+        AnimationTimer timer = new AnimationTimer() {
             long lastTick = 0;
 
             public void handle(long now) {
@@ -66,12 +75,13 @@ public class DebugMain extends Application {
                     return;
                 }
 
-                if (now - lastTick > 1000000000 / tickLength) {
+                if (now - lastTick > 1000000000 / tickLength && !simulation.isPaused()) {
                     lastTick = now;
                     tick(1 / tickLength, gc);
                 }
             }
-        }.start();
+        };
+        timer.start();
 
 
     }
@@ -87,18 +97,6 @@ public class DebugMain extends Application {
         gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
         drawShapes(gc);
 
-        /*
-        MovementComponent ma1Mc = marble1.getMovementComponent();
-        MovementComponent ma2Mc = marble2.getMovementComponent();
-
-        gc.setFill(Color.RED);
-        gc.fillOval(ma1Mc.getPosition().x - ma1Mc.getDiameter() / 2, ma1Mc.getPosition().y - ma1Mc.getDiameter() / 2,
-                ma1Mc.getDiameter() / 2, ma1Mc.getDiameter() / 2);
-        gc.fillOval(ma2Mc.getPosition().x - ma2Mc.getDiameter() / 2, ma2Mc.getPosition().y - ma2Mc.getDiameter() / 2,
-                ma2Mc.getDiameter() / 2, ma2Mc.getDiameter() / 2);
-
-
-         */
 
         simulation.tick(deltaTick);
     }
@@ -111,6 +109,34 @@ public class DebugMain extends Application {
 
         gc.fillOval(marble2.getPos().x - marble2.getDiameter() / 2, (marble2.getPos().z - marble2.getDiameter() / 2)* -1,
                 marble2.getDiameter() , marble2.getDiameter() );
+    }
+
+    static void drawSphere(GraphicsContext gc, Sphere s, Color c) {
+        Paint old = gc.getFill();
+        gc.setFill(c);
+        gc.fillOval(s.getPos().x - s.getDiameter() / 2, (s.getPos().z - s.getDiameter() / 2)* -1,
+                s.getDiameter() , s.getDiameter());
+        gc.setFill(old);
+    }
+    static void drawRectangle(GraphicsContext gc, Rectangle s, Color c) {
+        Paint old = gc.getFill();
+        gc.setFill(c);
+
+        //TODO Rectangle drawing
+
+        gc.setFill(old);
+    }
+
+    static void drawAllShapes(GraphicsContext gc) {
+        for(Entity e : simulation.getEntities()) {
+            if(e instanceof Sphere) {
+                drawSphere(gc, (Sphere) e, Color.LIGHTSKYBLUE);
+            } else if(e instanceof Rectangle) {
+                drawRectangle(gc, (Rectangle) e, Color.DARKOLIVEGREEN);
+            } else {
+                System.err.println("Entity is not valid!");
+            }
+        }
     }
 
 }

@@ -37,7 +37,7 @@ public abstract class Entity {
     public void update(Simulation sim, double dT) {
         var collider = this.findColliding(sim);
 
-        if (collider.isEmpty()) {
+        if (!collider.isEmpty()) {
             this.performCollision(collider.get());
             this.setAccel(Vec3d.nullvec());
         }

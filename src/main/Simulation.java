@@ -8,6 +8,9 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 public class Simulation {
+
+    private boolean paused = true;
+
     public final double GRAV_CONST = -9.807; // in m/s^2
     public final Vec3d GRAV_VEC = new Vec3d(0, 0, GRAV_CONST);  // in m/s^2
 
@@ -26,6 +29,14 @@ public class Simulation {
         return this.entities.stream()
                 .filter((Entity e) -> e != self)
                 .collect(Collectors.toList());
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
     }
 
     public void addEntities(Entity... entities) {
