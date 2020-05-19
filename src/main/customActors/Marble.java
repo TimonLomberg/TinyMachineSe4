@@ -5,7 +5,7 @@ import enums.CollisionObjectType;
 import main.Actor;
 import main.MovementComponent;
 import main.Simulation;
-import main.Vec3d;
+import misc.Vec3d;
 
 public class Marble extends Actor {
 

@@ -1,6 +1,7 @@
 package main;
 
 import enums.CollisionObjectType;
+import misc.Vec3d;
 
 public class Actor {
 
