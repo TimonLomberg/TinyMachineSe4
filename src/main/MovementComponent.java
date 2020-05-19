@@ -1,6 +1,7 @@
 package main;
 
 import enums.CollisionObjectType;
+import jdk.jshell.spi.ExecutionControl;
 import misc.Utils;
 
 import java.util.ArrayList;
@@ -137,6 +138,7 @@ public class MovementComponent {
     public Iterable<Actor> checkForCollidingActors() {
         var cActors = new ArrayList<Actor>();
 
+<<<<<<< Updated upstream
         for(Actor o : parent.getSimulation().getActors()) {
             switch (o.getObjectType()) {
 
@@ -148,6 +150,21 @@ public class MovementComponent {
                             if(Utils.distance(this.getPosition(), o.getMovementComponent().getPosition())
                                     <= this.getDiameter()/2 + o.getMovementComponent().getDiameter()/2) {
                                 cActors.add(o);
+=======
+        /*for(Actor o : parent.getSimulation().getActors()) {
+            if (o != parent) {
+                switch (o.getObjectType()) {
+
+                    // Other Object is Sphere
+                    case Sphere -> {
+                        switch (parent.getObjectType()) {
+                            // Other is Sphere + This is Sphere Collision
+                            case Sphere -> {
+                                if(Utils.distance(this.getPosition(), o.getMovementComponent().getPosition())
+                                        <= this.getDiameter()/2 + o.getMovementComponent().getDiameter()/2) {
+                                    cActors.add(o);
+                                }
+>>>>>>> Stashed changes
                             }
                         }
                         // Other is Sphere + This is Rectangle Collision
@@ -219,7 +236,9 @@ public class MovementComponent {
                 }
 
             }
-        }
+        }*/
+
+        System.err.println("checkForCollidingActors disabled");
         return cActors;
     }
 
