@@ -45,6 +45,10 @@ public class Vec3d {
         return Math.sqrt(this.lengthSquared());
     }
 
+    public Vec3d norm() {
+        return this.scalarDiv(this.length());
+    }
+
     public Vec3d add(@NotNull Vec3d other) {
         var ret = Vec3d.from(other);
 
@@ -56,11 +60,11 @@ public class Vec3d {
     }
 
     public Vec3d sub(@NotNull Vec3d other) {
-        var ret = Vec3d.from(other);
+        var ret = Vec3d.from(this);
 
-        ret.x -= this.x;
-        ret.y -= this.y;
-        ret.z -= this.z;
+        ret.x -= other.x;
+        ret.y -= other.y;
+        ret.z -= other.z;
 
         return ret;
     }
