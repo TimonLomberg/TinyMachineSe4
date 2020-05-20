@@ -11,8 +11,11 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
@@ -35,36 +38,44 @@ public class DebugMain extends Application {
     private static final double canvasScaleX = 500;
     private static final double canvasScaleY = 500;
 
-
+    static GraphicsContext gc;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        simulation = new Simulation();
-
-
+        AnchorPane anchorPane = new AnchorPane();
         Canvas canvas = new Canvas(1080, 970);
+        TextField textField = new TextField();
         Group root = new Group();
-        root.getChildren().add(canvas);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+
+        anchorPane.getChildren().addAll(canvas, textField);
+        root.getChildren().add(anchorPane);
+        AnchorPane.setLeftAnchor(textField, 0.0);
+        AnchorPane.setRightAnchor(textField, 0.0);
+        AnchorPane.setBottomAnchor(textField,0.0);
+
+        textField.setOnKeyReleased( event -> {
+            if(event.getCode() == KeyCode.ENTER) {
+                parseInput(textField.getText());
+                textField.clear();
+            }
+        });
+
+
+
+
         Scene scene = new Scene(root);
         primaryStage.setTitle("Debug");
         primaryStage.setScene(scene);
         primaryStage.show();
         canvas.getGraphicsContext2D().scale(canvasScaleX, canvasScaleY);
+        gc = canvas.getGraphicsContext2D();
 
 
-
-        marble1 = new Marble(1, 0.1);
-        marble2 = new Marble(1, 0.1);
-        marble1.setPos(new Vec3d(.2, 0, -0.3));
-        marble2.setPos(new Vec3d(.5, 0, -0.3));
-        simulation.addEntities(marble1, marble2);
-
-        marble1.setVelo(new Vec3d(0.05, 0, 0));
+        initialize();
 
 
-        drawShapes(gc);
         AnimationTimer timer = new AnimationTimer() {
             long lastTick = 0;
 
@@ -95,13 +106,15 @@ public class DebugMain extends Application {
 
 
         gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-        drawShapes(gc);
+        drawAllShapes();
 
 
         simulation.tick(deltaTick);
     }
 
-    static void drawShapes(GraphicsContext gc) {
+
+    @Deprecated
+    private static void drawShapes() {
         gc.setFill(Color.RED);
 
         gc.fillOval(marble1.getPos().x - marble1.getDiameter() / 2, (marble1.getPos().z - marble1.getDiameter() / 2)* -1,
@@ -111,14 +124,14 @@ public class DebugMain extends Application {
                 marble2.getDiameter() , marble2.getDiameter() );
     }
 
-    static void drawSphere(GraphicsContext gc, Sphere s, Color c) {
+    private static void drawSphere(Sphere s, Color c) {
         Paint old = gc.getFill();
         gc.setFill(c);
         gc.fillOval(s.getPos().x - s.getDiameter() / 2, (s.getPos().z - s.getDiameter() / 2)* -1,
                 s.getDiameter() , s.getDiameter());
         gc.setFill(old);
     }
-    static void drawRectangle(GraphicsContext gc, Rectangle s, Color c) {
+    private static void drawRectangle(Rectangle s, Color c) {
         Paint old = gc.getFill();
         gc.setFill(c);
 
@@ -127,16 +140,58 @@ public class DebugMain extends Application {
         gc.setFill(old);
     }
 
-    static void drawAllShapes(GraphicsContext gc) {
+    private static void drawAllShapes() {
         for(Entity e : simulation.getEntities()) {
             if(e instanceof Sphere) {
-                drawSphere(gc, (Sphere) e, Color.LIGHTSKYBLUE);
+                drawSphere((Sphere) e, Color.LIGHTSKYBLUE);
             } else if(e instanceof Rectangle) {
-                drawRectangle(gc, (Rectangle) e, Color.DARKOLIVEGREEN);
+                drawRectangle((Rectangle) e, Color.DARKOLIVEGREEN);
             } else {
                 System.err.println("Entity is not valid!");
             }
         }
     }
+
+    public void initialize() {
+        simulation = new Simulation();
+        reset();
+    }
+
+    private void buildSimulation() {
+        marble1 = new Marble(1, 0.1);
+        marble2 = new Marble(1, 0.1);
+        marble1.setPos(new Vec3d(.2, 0, -0.3));
+        marble2.setPos(new Vec3d(.5, 0, -0.3));
+        simulation.addEntities(marble1, marble2);
+
+        marble1.setVelo(new Vec3d(0.05, 0, 0));
+    }
+
+    private void reset() {
+        simulation.clearEntities();
+        buildSimulation();
+        drawAllShapes();
+    }
+
+    private void parseInput(String input) {
+        switch (input) {
+            case "/start" -> {
+                simulation.setPaused(false);
+            }
+            case "/pause" -> {
+                simulation.setPaused(true);
+            }
+            case "/reset" -> {
+                reset();
+                simulation.setPaused(true);
+            }
+
+            default -> {
+
+            }
+        }
+    }
+
+
 
 }

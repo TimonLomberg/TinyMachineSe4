@@ -52,4 +52,8 @@ public class Simulation {
             e.update(this, dT);
         }
     }
+
+    public void clearEntities() {
+        entities.clear();
+    }
 }

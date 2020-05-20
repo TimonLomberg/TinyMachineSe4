@@ -12,7 +12,9 @@
         <CLASSES>
           <root url="file://$MODULE_DIR$/javafx-sdk-11.0.2/lib" />
         </CLASSES>
-        <JAVADOC />
+        <JAVADOC>
+          <root url="https://docs.oracle.com/javase/8/javafx/api/toc.htm" />
+        </JAVADOC>
         <SOURCES>
           <root url="file://$MODULE_DIR$/javafx-sdk-11.0.2/lib" />
         </SOURCES>
