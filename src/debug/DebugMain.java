@@ -1,31 +1,23 @@
 package debug;
 
+import entities.Entity;
+import entities.Marble;
+import entities.Rectangle;
+import entities.Sphere;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
-import java.util.Scanner;
 import main.Simulation;
 import misc.Vec3d;
-
-import entities.*;
-
-import java.util.Scanner;
 
 
 public class DebugMain extends Application {
@@ -53,16 +45,14 @@ public class DebugMain extends Application {
         root.getChildren().add(anchorPane);
         AnchorPane.setLeftAnchor(textField, 0.0);
         AnchorPane.setRightAnchor(textField, 0.0);
-        AnchorPane.setBottomAnchor(textField,0.0);
+        AnchorPane.setBottomAnchor(textField, 0.0);
 
-        textField.setOnKeyReleased( event -> {
-            if(event.getCode() == KeyCode.ENTER) {
+        textField.setOnKeyReleased(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
                 parseInput(textField.getText());
                 textField.clear();
             }
         });
-
-
 
 
         Scene scene = new Scene(root);
@@ -117,20 +107,21 @@ public class DebugMain extends Application {
     private static void drawShapes() {
         gc.setFill(Color.RED);
 
-        gc.fillOval(marble1.getPos().x - marble1.getDiameter() / 2, (marble1.getPos().z - marble1.getDiameter() / 2)* -1,
-                marble1.getDiameter() , marble1.getDiameter() );
+        gc.fillOval(marble1.getPos().x - marble1.getDiameter() / 2, (marble1.getPos().z - marble1.getDiameter() / 2) * -1,
+                marble1.getDiameter(), marble1.getDiameter());
 
-        gc.fillOval(marble2.getPos().x - marble2.getDiameter() / 2, (marble2.getPos().z - marble2.getDiameter() / 2)* -1,
-                marble2.getDiameter() , marble2.getDiameter() );
+        gc.fillOval(marble2.getPos().x - marble2.getDiameter() / 2, (marble2.getPos().z - marble2.getDiameter() / 2) * -1,
+                marble2.getDiameter(), marble2.getDiameter());
     }
 
     private static void drawSphere(Sphere s, Color c) {
         Paint old = gc.getFill();
         gc.setFill(c);
-        gc.fillOval(s.getPos().x - s.getDiameter() / 2, (s.getPos().z - s.getDiameter() / 2)* -1,
-                s.getDiameter() , s.getDiameter());
+        gc.fillOval(s.getPos().x - s.getDiameter() / 2, (s.getPos().z - s.getDiameter() / 2) * -1,
+                s.getDiameter(), s.getDiameter());
         gc.setFill(old);
     }
+
     private static void drawRectangle(Rectangle s, Color c) {
         Paint old = gc.getFill();
         gc.setFill(c);
@@ -141,10 +132,10 @@ public class DebugMain extends Application {
     }
 
     private static void drawAllShapes() {
-        for(Entity e : simulation.getEntities()) {
-            if(e instanceof Sphere) {
+        for (Entity e : simulation.getEntities()) {
+            if (e instanceof Sphere) {
                 drawSphere((Sphere) e, Color.LIGHTSKYBLUE);
-            } else if(e instanceof Rectangle) {
+            } else if (e instanceof Rectangle) {
                 drawRectangle((Rectangle) e, Color.DARKOLIVEGREEN);
             } else {
                 System.err.println("Entity is not valid!");
@@ -175,24 +166,25 @@ public class DebugMain extends Application {
     }
 
     private void parseInput(String input) {
-        switch (input) {
-            case "/start" -> {
+        String[] inputSplit = input.split(" ");
+        switch (inputSplit[0]) {
+            case "/start", "/unpause", "/play" -> {
                 simulation.setPaused(false);
             }
-            case "/pause" -> {
+            case "/pause", "/stop" -> {
                 simulation.setPaused(true);
             }
-            case "/reset" -> {
+            case "/reset", "/restart" -> {
                 reset();
                 simulation.setPaused(true);
             }
+
 
             default -> {
 
             }
         }
     }
-
 
 
 }
