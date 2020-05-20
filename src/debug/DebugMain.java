@@ -168,6 +168,7 @@ public class DebugMain extends Application {
     }
 
     private void reset() {
+        gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
         simulation.clearEntities();
         buildSimulation();
         drawAllShapes();
