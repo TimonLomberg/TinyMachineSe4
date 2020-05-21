@@ -6,18 +6,20 @@ import misc.Vec3d;
 
 public class SimpleTrack extends Track {
 
-    public SimpleTrack(double s, double c, double[] xInterval) {
+    public SimpleTrack(double c, double s, double[] xInterval) {
         super(new Polynomial3d(new double[]{ c, s }, new double[]{}), xInterval);
     }
 
     @Override
     public boolean isColliding(Sphere sphere) {
 
+
         var slope = this.trackFunc.xFactors()[1];
 
         var p = sphere.getPos();
         var c = p.z - this.trackFunc.xFactors()[0] - this.trackFunc.xFactors()[1] * p.x;
-        var d = Math.sqrt( Math.pow(c, 2) - 1 - Math.pow(this.trackFunc.xFactors()[1], 2) );
+        //var d = Math.sqrt( Math.pow(c, 2) - 1 - Math.pow(this.trackFunc.xFactors()[1], 2) );
+        var d = this.normalAt(p.x, 0).dot(new Vec3d(0,0,1)) * c;
 
         var cond1 = sphere.getDiameter()/2 > d;
 
@@ -35,6 +37,7 @@ public class SimpleTrack extends Track {
         } else {
             return cond1;
         }
+
     }
 
     // wenn kolidiert mit cond1

@@ -1,4 +1,4 @@
-package debug;
+package main;
 
 import entities.*;
 import javafx.animation.AnimationTimer;
@@ -17,7 +17,7 @@ import main.Simulation;
 import misc.Vec3d;
 
 
-public class DebugMain extends Application {
+public class MainApplication extends Application {
 
 
     ////////////////////////////////////////
@@ -28,8 +28,8 @@ public class DebugMain extends Application {
     static Simulation simulation; // Don't edit!!
 
     private static final double tickLength = 100.0;
-    private static final double canvasScaleX = 500;
-    private static final double canvasScaleY = 500;
+    private static final double canvasScaleX = 300;
+    private static final double canvasScaleY = 300;
 
 
     ////////////////////////////////////////
@@ -130,14 +130,16 @@ public class DebugMain extends Application {
 
     private void buildSimulation() {
 
-        track1 = new SimpleTrack(-0.1, 0.8, new double[]{0.0, 1.0});
+        track1 = new SimpleTrack(0.6, 0.1, new double[]{0.1, 1.0});
+        track2 = new SimpleTrack(2, 0, new double[]{0, 5});
+
 
         marble1 = new Marble(1, 0.1);
         marble2 = new Marble(1, 0.1);
         marble1.setPos(new Vec3d(.2, 0, -0.3));
         marble2.setPos(new Vec3d(.5, 0, -0.3));
         simulation.addEntities(marble1, marble2);
-        simulation.addTracks(track1);
+        simulation.addTracks(track1, track2);
         marble1.setVelo(new Vec3d(0.05, 0, 0));
     }
 
