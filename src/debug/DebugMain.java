@@ -19,15 +19,34 @@ import misc.Vec3d;
 
 public class DebugMain extends Application {
 
-    static Simulation simulation;
 
-    static Marble marble1, marble2;
+    ////////////////////////////////////////
+    /*        Simulation Parameters       */
+    ////////////////////////////////////////
+
+
+    static Simulation simulation; // Don't edit!!
 
     private static final double tickLength = 100.0;
     private static final double canvasScaleX = 500;
     private static final double canvasScaleY = 500;
 
-    static GraphicsContext gc;
+
+    ////////////////////////////////////////
+    /*          Simulation Members        */
+    ////////////////////////////////////////
+
+
+    private static Marble marble1, marble2;
+    private static SimpleTrack track1, track2;
+
+
+    ////////////////////////////////////////
+    /*             Program Flow           */
+    ////////////////////////////////////////
+
+
+    static GraphicsContext gc; // Don't edit!!
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -84,11 +103,6 @@ public class DebugMain extends Application {
 
     }
 
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     public static void tick(double deltaTick, GraphicsContext gc) {
 
 
@@ -98,6 +112,69 @@ public class DebugMain extends Application {
 
         simulation.tick(deltaTick);
     }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+
+    ////////////////////////////////////////
+    /*         Simulation Building        */
+    ////////////////////////////////////////
+
+
+    public void initialize() {
+        simulation = new Simulation();
+        reset();
+    }
+
+    private void buildSimulation() {
+        marble1 = new Marble(1, 0.1);
+        marble2 = new Marble(1, 0.1);
+        marble1.setPos(new Vec3d(.2, 0, -0.3));
+        marble2.setPos(new Vec3d(.5, 0, -0.3));
+        simulation.addEntities(marble1, marble2);
+
+        marble1.setVelo(new Vec3d(0.05, 0, 0));
+    }
+
+    private void reset() {
+        gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+        simulation.clearEntities();
+        buildSimulation();
+        drawAllShapes();
+    }
+
+
+    ////////////////////////////////////////
+    /*               Inputs               */
+    ////////////////////////////////////////
+
+
+    private void parseInput(String input) {
+        String[] inputSplit = input.split(" ");
+        switch (inputSplit[0]) {
+            case "/start", "/unpause", "/play" -> {
+                simulation.setPaused(false);
+            }
+            case "/pause", "/stop" -> {
+                simulation.setPaused(true);
+            }
+            case "/reset", "/restart" -> {
+                reset();
+                simulation.setPaused(true);
+            }
+
+            default -> {
+
+            }
+        }
+    }
+
+
+    ////////////////////////////////////////
+    /*            Draw Methods            */
+    ////////////////////////////////////////
 
 
     @Deprecated
@@ -154,48 +231,6 @@ public class DebugMain extends Application {
                 drawRectangle((Rectangle) e, Color.DARKOLIVEGREEN);
             } else  {
                 System.err.println("Entity is not valid!");
-            }
-        }
-    }
-
-    public void initialize() {
-        simulation = new Simulation();
-        reset();
-    }
-
-    private void buildSimulation() {
-        marble1 = new Marble(1, 0.1);
-        marble2 = new Marble(1, 0.1);
-        marble1.setPos(new Vec3d(.2, 0, -0.3));
-        marble2.setPos(new Vec3d(.5, 0, -0.3));
-        simulation.addEntities(marble1, marble2);
-
-        marble1.setVelo(new Vec3d(0.05, 0, 0));
-    }
-
-    private void reset() {
-        gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-        simulation.clearEntities();
-        buildSimulation();
-        drawAllShapes();
-    }
-
-    private void parseInput(String input) {
-        String[] inputSplit = input.split(" ");
-        switch (inputSplit[0]) {
-            case "/start", "/unpause", "/play" -> {
-                simulation.setPaused(false);
-            }
-            case "/pause", "/stop" -> {
-                simulation.setPaused(true);
-            }
-            case "/reset", "/restart" -> {
-                reset();
-                simulation.setPaused(true);
-            }
-
-            default -> {
-
             }
         }
     }
