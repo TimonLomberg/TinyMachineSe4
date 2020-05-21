@@ -129,12 +129,15 @@ public class DebugMain extends Application {
     }
 
     private void buildSimulation() {
+
+        track1 = new SimpleTrack(-0.1, 0.8, new double[]{0.0, 1.0});
+
         marble1 = new Marble(1, 0.1);
         marble2 = new Marble(1, 0.1);
         marble1.setPos(new Vec3d(.2, 0, -0.3));
         marble2.setPos(new Vec3d(.5, 0, -0.3));
         simulation.addEntities(marble1, marble2);
-
+        simulation.addTracks(track1);
         marble1.setVelo(new Vec3d(0.05, 0, 0));
     }
 
@@ -208,7 +211,7 @@ public class DebugMain extends Application {
     private static void drawSimpleTrack(SimpleTrack st, Color c) {
         Paint old = gc.getStroke();
         gc.setStroke(c);
-        gc.setLineWidth(10);
+        gc.setLineWidth(0.01);
 
         gc.strokeLine(st.getXIntervall()[0], st.getFunc().valueAt(st.getXIntervall()[0], 0),
                 st.getXIntervall()[1], st.getFunc().valueAt(st.getXIntervall()[1], 0));

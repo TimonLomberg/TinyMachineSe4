@@ -11,8 +11,9 @@ public class Track {
     protected double[] xIntervall;
     protected double[] yIntervall;
 
-    public Track(Polynomial3d trackFunc) {
+    public Track(Polynomial3d trackFunc, double[] xInterval) {
         this.trackFunc = trackFunc;
+        this.xIntervall = xInterval;
     }
 
     public Vec3d normalAt(double x, double y) {

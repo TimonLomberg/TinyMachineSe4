@@ -6,8 +6,8 @@ import misc.Vec3d;
 
 public class SimpleTrack extends Track {
 
-    public SimpleTrack(double s, double c) {
-        super(new Polynomial3d(new double[]{ c, s }, new double[]{}));
+    public SimpleTrack(double s, double c, double[] xInterval) {
+        super(new Polynomial3d(new double[]{ c, s }, new double[]{}), xInterval);
     }
 
     @Override

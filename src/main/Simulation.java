@@ -1,6 +1,7 @@
 package main;
 
 import entities.Entity;
+import entities.SimpleTrack;
 import entities.Sphere;
 import entities.Track;
 import misc.Vec3d;
@@ -23,6 +24,7 @@ public class Simulation {
 
     public Simulation() {
         entities = new ArrayList<>();
+        tracks = new ArrayList<>();
     }
 
     public Iterable<Track> getTracks() {
@@ -67,7 +69,9 @@ public class Simulation {
         for(var t : this.getTracks()) {
             for(var e : this.getEntities()) {
                 if (e instanceof Sphere) {
-                    t.isColliding((Sphere) e);
+                    if(t.isColliding((Sphere) e)) {
+                        ((SimpleTrack)t).performCollision((Sphere) e);
+                    }
                 }
             }
 
