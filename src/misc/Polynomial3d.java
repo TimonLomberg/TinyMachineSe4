@@ -16,6 +16,14 @@ public class Polynomial3d {
         this.ys = ys;
     }
 
+    public double[] xFactors() {
+        return this.xs;
+    }
+
+    public double[] yFactors() {
+        return this.ys;
+    }
+
     public double valueAt(double x, double y) {
         var sum = 0.0;
         var minLen = Math.min(xs.length, ys.length);
