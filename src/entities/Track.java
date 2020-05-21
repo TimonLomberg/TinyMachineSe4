@@ -22,6 +22,10 @@ public class Track {
         return v1.cross(v2).norm();
     }
 
+    public Polynomial3d getFunc() {
+        return this.trackFunc;
+    }
+
     public double[] getXIntervall() {
         return this.xIntervall;
     }
