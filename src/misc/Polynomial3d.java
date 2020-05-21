@@ -57,6 +57,26 @@ public class Polynomial3d {
         return this.derived;
     }
 
+    public Polynomial3d derivedByXIgnoreY() {
+        double[] newXs = new double[Math.max(0, this.xs.length-1)];
+
+        for (int i = 1; i < this.xs.length; ++i) {
+            newXs[i-1] = this.xs[i] * i;
+        }
+
+        return new Polynomial3d(newXs, new double[]{});
+    }
+
+    public Polynomial3d derivedByYIgnoreX() {
+        double[] newYs = new double[Math.max(0, this.ys.length-1)];
+
+        for (int i = 1; i < this.ys.length; ++i) {
+            newYs[i-1] = this.ys[i] * i;
+        }
+
+        return new Polynomial3d(new double[]{}, newYs);
+    }
+
     @Override
     public String toString() {
         var joiner = new StringJoiner(" + ");
