@@ -33,8 +33,9 @@ public class Vec3d {
         return new Vec3d(other.x, other.y, other.z);
     }
 
-    public void debug() {
-        System.out.println("(" + this.x + ", " + this.y + ", " + this.z + ")");
+    @Override
+    public String toString() {
+        return "(" + this.x + ", " + this.y + ", " + this.z + ")";
     }
 
     public double lengthSquared() {
