@@ -31,6 +31,10 @@ public abstract class Entity {
     public void setMass(double mass) { this.mass = mass; }
 
 
+    public void mirrorVeloComponent(Vec3d normVec) {
+        this.velo = this.velo.add( normVec.scalarMul( this.velo.dot(normVec) * -2 ) );
+    }
+
     public abstract void performCollision(Entity other);
     public abstract Optional<Entity> findColliding(Simulation sim);
 

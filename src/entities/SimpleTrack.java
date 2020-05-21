@@ -53,8 +53,9 @@ public class SimpleTrack extends Track {
         var collPos = new Vec3d( slope > 0 ? 1 : -1, 0, isAbove ? -slope : slope ).norm();
         var parallel = Simulation.GRAV_VEC.sub( collPos.scalarMul( collPos.dot(Simulation.GRAV_VEC) ) );
 
-        sphere.setAccel(sphere.getAccel().add(parallel));
+        // reibung fehlt
 
-        // es fehlt: teil kugel velocity der orthogonal zur bahn ist umkehren
+        sphere.setAccel(sphere.getAccel().add(parallel));
+        sphere.mirrorVeloComponent(this.normalAt(p.x, 0));
     }
 }
