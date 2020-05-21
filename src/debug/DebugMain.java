@@ -1,9 +1,6 @@
 package debug;
 
-import entities.Entity;
-import entities.Marble;
-import entities.Rectangle;
-import entities.Sphere;
+import entities.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -122,7 +119,7 @@ public class DebugMain extends Application {
         gc.setFill(old);
     }
 
-    private static void drawRectangle(Rectangle s, Color c) {
+    private static void drawRectangle(Rectangle r, Color c) {
         Paint old = gc.getFill();
         gc.setFill(c);
 
@@ -131,13 +128,31 @@ public class DebugMain extends Application {
         gc.setFill(old);
     }
 
+    private static void drawSimpleTrack(SimpleTrack st, Color c) {
+        Paint old = gc.getStroke();
+        gc.setStroke(c);
+        gc.setLineWidth(10);
+
+        gc.strokeLine(st.getXIntervall()[0], st.getFunc().valueAt(st.getXIntervall()[0], 0),
+                st.getXIntervall()[1], st.getFunc().valueAt(st.getXIntervall()[1], 0));
+
+        gc.setStroke(old);
+    }
+
     private static void drawAllShapes() {
+
+        for(Track t : simulation.getTracks()) {
+            if(t instanceof SimpleTrack) {
+                drawSimpleTrack((SimpleTrack) t, Color.RED);
+            }
+        }
+
         for (Entity e : simulation.getEntities()) {
             if (e instanceof Sphere) {
                 drawSphere((Sphere) e, Color.LIGHTSKYBLUE);
             } else if (e instanceof Rectangle) {
                 drawRectangle((Rectangle) e, Color.DARKOLIVEGREEN);
-            } else {
+            } else  {
                 System.err.println("Entity is not valid!");
             }
         }
@@ -178,7 +193,6 @@ public class DebugMain extends Application {
                 reset();
                 simulation.setPaused(true);
             }
-
 
             default -> {
 
