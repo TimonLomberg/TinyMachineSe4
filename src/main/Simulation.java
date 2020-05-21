@@ -1,6 +1,8 @@
 package main;
 
 import entities.Entity;
+import entities.Sphere;
+import entities.Track;
 import misc.Vec3d;
 
 import java.util.ArrayList;
@@ -16,9 +18,15 @@ public class Simulation {
 
     private ArrayList<Entity> entities;
 
+    private ArrayList<Track> tracks;
+
 
     public Simulation() {
         entities = new ArrayList<>();
+    }
+
+    public Iterable<Track> getTracks() {
+        return this.tracks;
     }
 
     public Iterable<Entity> getEntities() {
@@ -43,11 +51,27 @@ public class Simulation {
         Collections.addAll(this.entities, entities);
     }
 
+    public void addTracks(Track... tracks) {
+        Collections.addAll(this.tracks, tracks);
+    }
+
     public boolean removeEntity(Entity e) {
         return this.entities.remove(e);
     }
 
+    public boolean removeTrack(Track t) {
+        return this.tracks.remove(t);
+    }
+
     public void tick(double dT) {
+        for(var t : this.getTracks()) {
+            for(var e : this.getEntities()) {
+                if (e instanceof Sphere) {
+                    t.isColliding((Sphere) e);
+                }
+            }
+
+        }
         for (var e : this.getEntities()) {
             e.update(this, dT);
         }
