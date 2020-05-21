@@ -8,15 +8,15 @@ import java.util.StringJoiner;
 public class Polynomial3d {
     private double[] xs;
     private double[] ys;
-    private Polynomial3d derived = null;
 
+    private Polynomial3d derived = null;
 
     public Polynomial3d(@NotNull double[] xs, @NotNull double[] ys) {
         this.xs = xs;
         this.ys = ys;
     }
 
-    public double at(double x, double y) {
+    public double valueAt(double x, double y) {
         var sum = 0.0;
         var minLen = Math.min(xs.length, ys.length);
 
