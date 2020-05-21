@@ -70,15 +70,16 @@ public class Simulation {
             for(var e : this.getEntities()) {
                 if (e instanceof Sphere) {
                     if(t.isColliding((Sphere) e)) {
-                        System.out.println("Colliding");
-                        ((SimpleTrack)t).performCollision((Sphere) e);
+                       // System.out.println("Colliding");
+                        //((SimpleTrack)t).performCollision((Sphere) e);
                     }
                 }
             }
 
         }
         for (var e : this.getEntities()) {
-            e.update(this, dT);
+            if(e.getGravMul() != 0)
+                e.update(this, dT);
         }
     }
 

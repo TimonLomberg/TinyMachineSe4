@@ -133,14 +133,43 @@ public class MainApplication extends Application {
         track1 = new SimpleTrack(0.6, 0.1, new double[]{0.1, 1.0});
         track2 = new SimpleTrack(2, 0, new double[]{0, 5});
 
+        /*
+        double startX = 0.1;
+        double startY = -0.5;
+        double changeX = 0.005;
+        double changeY = -0.001;
+        for(int i = 1; i<=200; i++) {
+            Marble m = new Marble(Double.MAX_VALUE, 0.08);
+            m.setPos(new Vec3d(startX+i*changeX, 0, startY+i*changeY));
+            m.setGravMul(0);
+            simulation.addEntities(m);
+        }
+
+         startX = 0.1;
+         startY = -0.5;
+         changeX = 0.005;
+         changeY = -0.001;
+        for(int i = 1; i<=200; i++) {
+            Marble m = new Marble(Double.MAX_VALUE, 0.08);
+            m.setPos(new Vec3d(startX+i*changeX, 0, startY+i*changeY));
+            m.setGravMul(0);
+            simulation.addEntities(m);
+        }
+
+
+         */
+
+
 
         marble1 = new Marble(1, 0.1);
-        marble2 = new Marble(1, 0.1);
-        marble1.setPos(new Vec3d(.2, 0, -0.3));
-        marble2.setPos(new Vec3d(.5, 0, -0.3));
+        marble2 = new Marble(Double.MAX_VALUE, 0.1);
+        marble1.setPos(new Vec3d(.5, 0, -0.3));
+        marble2.setPos(new Vec3d(.5, 0, -0.6));
+        marble2.setGravMul(0);
         simulation.addEntities(marble1, marble2);
         simulation.addTracks(track1, track2);
-        marble1.setVelo(new Vec3d(0.05, 0, 0));
+        //marble1.setVelo(new Vec3d(0.05, 0, 0));
+
     }
 
     private void reset() {

@@ -11,6 +11,7 @@ public abstract class Entity {
     protected Vec3d accel;
 
     protected double mass;
+    protected double gravMul = 1;
 
     public Entity(Vec3d pos, Vec3d velo, Vec3d accel, double mass) {
         this.pos = pos;
@@ -22,7 +23,9 @@ public abstract class Entity {
     public Vec3d getPos() { return this.pos; }
     public Vec3d getVelo() { return this.velo; }
     public Vec3d getAccel() { return this.accel; }
+    public double getGravMul() {return gravMul; }
 
+    public void setGravMul(double gravMul) {this.gravMul = gravMul; }
     public void setPos(Vec3d pos) { this.pos = pos; }
     public void setVelo(Vec3d velo) { this.velo = velo; }
     public void setAccel(Vec3d accel) { this.accel = accel; }
@@ -50,6 +53,6 @@ public abstract class Entity {
                 this.velo.scalarMul(dT));
 
         this.velo = this.velo.add(
-                this.accel.add(sim.GRAV_VEC).scalarMul(dT));
+                this.accel.add(sim.GRAV_VEC.scalarMul(gravMul)).scalarMul(dT));
     }
 }
