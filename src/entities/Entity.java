@@ -39,13 +39,13 @@ public abstract class Entity {
     }
 
     public abstract void performCollision(Entity other);
-    public abstract Optional<Entity> findColliding(Simulation sim);
+    public abstract Entity findColliding(Simulation sim);
 
     public void update(Simulation sim, double dT) {
-        var collider = this.findColliding(sim);
+        Entity collider = this.findColliding(sim);
 
-        if (!collider.isEmpty()) {
-            this.performCollision(collider.get());
+        if (collider != null) {
+            this.performCollision(collider);
             this.setAccel(Vec3d.nullvec());
         }
 

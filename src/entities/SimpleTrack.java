@@ -14,17 +14,17 @@ public class SimpleTrack extends Track {
     public boolean isColliding(Sphere sphere) {
 
 
-        var slope = this.trackFunc.xFactors()[1];
+        double slope = this.trackFunc.xFactors()[1];
 
-        var p = sphere.getPos();
-        var c = p.z - this.trackFunc.xFactors()[0] - this.trackFunc.xFactors()[1] * p.x;
+        Vec3d p = sphere.getPos();
+        double c = p.z - this.trackFunc.xFactors()[0] - this.trackFunc.xFactors()[1] * p.x;
         //var d = Math.sqrt( Math.pow(c, 2) - 1 - Math.pow(this.trackFunc.xFactors()[1], 2) );
-        var d = this.normalAt(p.x, 0).dot(new Vec3d(0,0,1)) * c;
+        double d = this.normalAt(p.x, 0).dot(new Vec3d(0,0,1)) * c;
 
-        var cond1 = sphere.getDiameter()/2 > d;
+        boolean cond1 = sphere.getDiameter()/2 > d;
 
-        var add = d / Math.sqrt(1 + Math.pow(slope, 2));
-        var newIntervall = new double[]{ this.xIntervall[0] + add, this.xIntervall[1] + add };
+        double add = d / Math.sqrt(1 + Math.pow(slope, 2));
+        double[] newIntervall = new double[]{ this.xIntervall[0] + add, this.xIntervall[1] + add };
 
         // außerhalb bahn intervall (könnte mit ecke kollidieren)
         if (p.x < newIntervall[0] && p.x > newIntervall[1]) {
@@ -48,13 +48,13 @@ public class SimpleTrack extends Track {
         // z = -a wenn kugel von oben
         // z = a  wenn kugen von unten
 
-        var p = sphere.getPos();
+        Vec3d p = sphere.getPos();
 
-        var slope = this.trackFunc.derived().valueAt(p.x, 0);
-        var isAbove = (p.z - sphere.getDiameter()/2) > this.trackFunc.valueAt(p.x, 0);
+        double slope = this.trackFunc.derived().valueAt(p.x, 0);
+        boolean isAbove = (p.z - sphere.getDiameter()/2) > this.trackFunc.valueAt(p.x, 0);
 
-        var collPos = new Vec3d( slope > 0 ? 1 : -1, 0, isAbove ? -slope : slope ).norm();
-        var parallel = Simulation.GRAV_VEC.sub( collPos.scalarMul( collPos.dot(Simulation.GRAV_VEC) ) );
+        Vec3d collPos = new Vec3d( slope > 0 ? 1 : -1, 0, isAbove ? -slope : slope ).norm();
+        Vec3d parallel = Simulation.GRAV_VEC.sub( collPos.scalarMul( collPos.dot(Simulation.GRAV_VEC) ) );
 
         // reibung fehlt
 

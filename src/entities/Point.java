@@ -17,29 +17,29 @@ public class Point extends Entity {
     }
 
     @Override
-    public Optional<Entity> findColliding(Simulation sim) {
+    public Entity findColliding(Simulation sim) {
         for (Entity e : sim.getEntitesWithoutSelf(this)) {
             if (e instanceof Sphere) {
-                var s = (Sphere)e;
+                Sphere s = (Sphere)e;
 
                 if(Utils.distance(s.getPos(), this.getPos())
                         < s.getDiameter()/2) {
-                    return Optional.of(s);
+                    return s;
                 }
             } else if (e instanceof Rectangle) {
-                var r = (Rectangle)e;
+                Rectangle r = (Rectangle)e;
 
                 if(Utils.pointInRect(this.getPos(), r)) {
-                    return Optional.of(r);
+                    return r;
                 }
             } else if (e instanceof Point) {
-                var p = (Point)e;
+                Point p = (Point)e;
 
                 if(Utils.distance(this.getPos(), p.getPos()) == 0.0) {
-                    return Optional.of(p);
+                    return p;
                 }
             }
         }
-        return Optional.empty();
+        return null;
     }
 }

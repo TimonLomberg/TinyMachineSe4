@@ -188,20 +188,24 @@ public class MainApplication extends Application {
     private void parseInput(String input) {
         String[] inputSplit = input.split(" ");
         switch (inputSplit[0]) {
-            case "/start", "/unpause", "/play" -> {
+            case "/start":
+            case "/unpause":
+            case "/play":
                 simulation.setPaused(false);
-            }
-            case "/pause", "/stop" -> {
+                break;
+
+            case "/pause":
+            case "/stop":
                 simulation.setPaused(true);
-            }
-            case "/reset", "/restart" -> {
+                break;
+
+            case "/reset":
+            case "/restart":
                 reset();
                 simulation.setPaused(true);
-            }
+                break;
 
-            default -> {
-
-            }
+            default:
         }
     }
 

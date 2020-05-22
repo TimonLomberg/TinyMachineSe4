@@ -66,8 +66,8 @@ public class Simulation {
     }
 
     public void tick(double dT) {
-        for(var t : this.getTracks()) {
-            for(var e : this.getEntities()) {
+        for(Track t : this.getTracks()) {
+            for(Entity e : this.getEntities()) {
                 if (e instanceof Sphere) {
                     if(t.isColliding((Sphere) e)) {
                        // System.out.println("Colliding");
@@ -77,7 +77,7 @@ public class Simulation {
             }
 
         }
-        for (var e : this.getEntities()) {
+        for (Entity e : this.getEntities()) {
             if(e.getGravMul() != 0)
                 e.update(this, dT);
         }

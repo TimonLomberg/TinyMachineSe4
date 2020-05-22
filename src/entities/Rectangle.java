@@ -1,11 +1,9 @@
 package entities;
 
-import jdk.jshell.spi.ExecutionControl;
 import main.Simulation;
 import misc.Utils;
 import misc.Vec3d;
 
-import java.util.Optional;
 
 public class Rectangle extends Entity {
     private Vec3d dimensions;
@@ -52,22 +50,22 @@ public class Rectangle extends Entity {
     }
 
     @Override
-    public Optional<Entity> findColliding(Simulation sim) {
+    public Entity findColliding(Simulation sim) {
         for (Entity e : sim.getEntitesWithoutSelf(this)) {
             if (e instanceof Sphere) {
                 System.err.println("rectangle cannot collide with sphere yet");
 
             } else if (e instanceof Rectangle) {
-                var r = (Rectangle)e;
+                Rectangle r = (Rectangle)e;
 
                 if(Utils.rectIntersect(this, r)) {
-                    return Optional.of(r);
+                    return r;
                 }
             } else if (e instanceof Point) {
-                var p = (Point)e;
+                Point p = (Point)e;
 
                 if(Utils.pointInRect(p.getPos(), this)) {
-                    return Optional.of(p);
+                    return p;
                 }
             }
         }

@@ -51,7 +51,7 @@ public class Vec3d {
     }
 
     public Vec3d add(@NotNull Vec3d other) {
-        var ret = Vec3d.from(other);
+        Vec3d ret = Vec3d.from(other);
 
         ret.x += this.x;
         ret.y += this.y;
@@ -61,7 +61,7 @@ public class Vec3d {
     }
 
     public Vec3d sub(@NotNull Vec3d other) {
-        var ret = Vec3d.from(this);
+        Vec3d ret = Vec3d.from(this);
 
         ret.x -= other.x;
         ret.y -= other.y;
@@ -75,15 +75,15 @@ public class Vec3d {
     }
 
     public Vec3d cross(@NotNull Vec3d other) {
-        var a = this.y * other.z - this.z * other.y;
-        var b = this.z * other.x - this.x * other.z;
-        var c = this.x * other.y - this.y * other.x;
+        double a = this.y * other.z - this.z * other.y;
+        double b = this.z * other.x - this.x * other.z;
+        double c = this.x * other.y - this.y * other.x;
 
         return new Vec3d(a, b, c);
     }
 
     public Vec3d scalarMul(double lambda) {
-        var ret = Vec3d.from(this);
+        Vec3d ret = Vec3d.from(this);
 
         ret.x *= lambda;
         ret.y *= lambda;
@@ -93,7 +93,7 @@ public class Vec3d {
     }
 
     public Vec3d scalarDiv(double lambda) {
-        var ret = Vec3d.from(this);
+        Vec3d ret = Vec3d.from(this);
 
         ret.x /= lambda;
         ret.y /= lambda;
