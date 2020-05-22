@@ -1,5 +1,3 @@
-package main;
-
 import entities.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -27,7 +25,7 @@ public class MainApplication extends Application {
 
     static Simulation simulation; // Don't edit!!
 
-    private static final double tickLength = 100.0;
+    private static final double tickLength = 500.0;
     private static final double canvasScaleX = 300;
     private static final double canvasScaleY = 300;
 
@@ -49,7 +47,7 @@ public class MainApplication extends Application {
     static GraphicsContext gc; // Don't edit!!
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
 
         AnchorPane anchorPane = new AnchorPane();
         Canvas canvas = new Canvas(1080, 970);
@@ -134,10 +132,22 @@ public class MainApplication extends Application {
         track2 = new SimpleTrack(2, 0, new double[]{0, 5});
 
         /*
+
         double startX = 0.1;
-        double startY = -0.5;
-        double changeX = 0.005;
-        double changeY = -0.001;
+        double startY = -1;
+        double changeX = 0.01;
+        double changeY = -0.0002;
+        for(int i = 1; i<=100; i++) {
+            Marble m = new Marble(Double.MAX_VALUE, 0.08);
+            m.setPos(new Vec3d(startX+i*changeX, 0, startY+i*changeY));
+            m.setGravMul(0);
+            simulation.addEntities(m);
+        }
+
+         startX = 1;
+         startY = -1.6;
+         changeX = 0.02;
+         changeY = 0.00008;
         for(int i = 1; i<=200; i++) {
             Marble m = new Marble(Double.MAX_VALUE, 0.08);
             m.setPos(new Vec3d(startX+i*changeX, 0, startY+i*changeY));
@@ -145,28 +155,16 @@ public class MainApplication extends Application {
             simulation.addEntities(m);
         }
 
-         startX = 0.1;
-         startY = -0.5;
-         changeX = 0.005;
-         changeY = -0.001;
-        for(int i = 1; i<=200; i++) {
-            Marble m = new Marble(Double.MAX_VALUE, 0.08);
-            m.setPos(new Vec3d(startX+i*changeX, 0, startY+i*changeY));
-            m.setGravMul(0);
-            simulation.addEntities(m);
-        }
+        */
 
-
-         */
 
 
 
         marble1 = new Marble(1, 0.1);
-        marble2 = new Marble(Double.MAX_VALUE, 0.1);
-        marble1.setPos(new Vec3d(.5, 0, -0.3));
-        marble2.setPos(new Vec3d(.5, 0, -0.6));
-        marble2.setGravMul(0);
-        simulation.addEntities(marble1, marble2);
+        marble2 = new Marble(1, 0.1);
+        marble1.setPos(new Vec3d(.5, 0, -0.4));
+        marble2.setPos(new Vec3d(.5, 0, -0.3));
+        simulation.addEntities(marble1/*, marble2*/);
         simulation.addTracks(track1, track2);
         //marble1.setVelo(new Vec3d(0.05, 0, 0));
 
@@ -227,6 +225,7 @@ public class MainApplication extends Application {
         gc.setFill(c);
         gc.fillOval(s.getPos().x - s.getDiameter() / 2, (s.getPos().z - s.getDiameter() / 2) * -1,
                 s.getDiameter(), s.getDiameter());
+
         gc.setFill(old);
     }
 
@@ -245,7 +244,7 @@ public class MainApplication extends Application {
         gc.setLineWidth(0.01);
 
         gc.strokeLine(st.getXIntervall()[0], st.getFunc().valueAt(st.getXIntervall()[0], 0),
-                st.getXIntervall()[1], st.getFunc().valueAt(st.getXIntervall()[1], 0));
+                st.getXIntervall()[1], -st.getFunc().valueAt(st.getXIntervall()[1], 0));
 
         gc.setStroke(old);
     }

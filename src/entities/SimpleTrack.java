@@ -17,9 +17,14 @@ public class SimpleTrack extends Track {
         var slope = this.trackFunc.xFactors()[1];
 
         var p = sphere.getPos();
-        var c = p.z - this.trackFunc.xFactors()[0] - this.trackFunc.xFactors()[1] * p.x;
+        var c = p.z - this.trackFunc.valueAt(p.x, 0);
         //var d = Math.sqrt( Math.pow(c, 2) - 1 - Math.pow(this.trackFunc.xFactors()[1], 2) );
         var d = this.normalAt(p.x, 0).dot(new Vec3d(0,0,1)) * c;
+        System.out.println("p.x: " + p.z);
+        System.out.println("value at: " +this.trackFunc.valueAt(p.x, 0));
+        System.out.println("c: "+ c);
+        System.out.println("d: "+ d);
+
 
         var cond1 = sphere.getDiameter()/2 > d;
 
@@ -27,16 +32,18 @@ public class SimpleTrack extends Track {
         var newIntervall = new double[]{ this.xIntervall[0] + add, this.xIntervall[1] + add };
 
         // außerhalb bahn intervall (könnte mit ecke kollidieren)
-        if (p.x < newIntervall[0] && p.x > newIntervall[1]) {
+        /* if (p.x < newIntervall[0] && p.x > newIntervall[1]) {
             return cond1
                     && Math.sqrt(Math.pow(p.x - this.xIntervall[0], 2)
                     + Math.pow(p.z - this.trackFunc.valueAt(this.xIntervall[0], 0), 2)) < sphere.getDiameter()/2
 
                     && Math.sqrt(Math.pow(p.x - this.xIntervall[1], 2)
                     + Math.pow(p.z - this.trackFunc.valueAt(this.xIntervall[1], 0), 2)) < sphere.getDiameter()/2;
+
         } else {
-            return cond1;
-        }
+        */
+            return cond1 && d > 0;
+       // }
 
     }
 
@@ -47,6 +54,8 @@ public class SimpleTrack extends Track {
         // x = 1  wenn steigung pos
         // z = -a wenn kugel von oben
         // z = a  wenn kugen von unten
+
+        System.out.println();
 
         var p = sphere.getPos();
 

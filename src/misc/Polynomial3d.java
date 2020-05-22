@@ -26,21 +26,13 @@ public class Polynomial3d {
 
     public double valueAt(double x, double y) {
         var sum = 0.0;
-        var minLen = Math.min(xs.length, ys.length);
 
-        for (int i = 0; i < minLen; ++i) {
+        for (int i = 0; i < this.xs.length; ++i) {
             sum += xs[i] * Math.pow(x, i);
-            sum += ys[i] * Math.pow(y, i);
         }
 
-        if (xs.length != ys.length) {
-            var xLessY = xs.length < ys.length;
-            var rest = xLessY ? ys : xs;
-            var val = xLessY ? y : x;
-
-            for (int i = minLen; i < rest.length; ++i) {
-                sum += rest[i] * Math.pow(val, i);
-            }
+        for (int i = 0; i < this.ys.length; ++i) {
+            sum += ys[i] * Math.pow(y, i);
         }
 
         return sum;

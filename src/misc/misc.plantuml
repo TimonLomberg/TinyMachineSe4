@@ -1,0 +1,66 @@
+@startuml
+
+title __MISC's Class Diagram__\n
+
+  namespace misc {
+    class misc.Polynomial3d {
+        - xs : double[]
+        - ys : double[]
+        + Polynomial3d()
+        + derived()
+        + derivedByXIgnoreY()
+        + derivedByYIgnoreX()
+        + toString()
+        + valueAt()
+        + xFactors()
+        + yFactors()
+    }
+  }
+  
+
+  namespace misc {
+    class misc.Utils {
+        {static} + distance()
+        {static} + inRange()
+        {static} + pointInRect()
+        {static} + rangeIntersect()
+        {static} + rectIntersect()
+        - Utils()
+    }
+  }
+  
+
+  namespace misc {
+    class misc.Vec3d {
+        + x : double
+        + y : double
+        + z : double
+        + Vec3d()
+        + Vec3d()
+        + Vec3d()
+        + add()
+        + cross()
+        + dot()
+        {static} + from()
+        + length()
+        + lengthSquared()
+        + norm()
+        {static} + nullvec()
+        + scalarDiv()
+        + scalarMul()
+        + sub()
+        + toString()
+    }
+  }
+  
+
+  misc.Polynomial3d o-- misc.Polynomial3d : derived
+
+
+right footer
+
+
+
+endfooter
+
+@enduml
