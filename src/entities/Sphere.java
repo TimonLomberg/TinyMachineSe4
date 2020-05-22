@@ -46,8 +46,8 @@ public class Sphere extends Entity {
 
                 System.out.println("this mov: " + this.getVelo().length());
 
-                this.setVelo(v1New.add( this.getVelo().sub(orthVel1) ));
-                collider.setVelo(v2New.add( collider.getVelo().sub(orthVel2) ));
+                this.setVelo(v1New.add( this.getVelo().sub(orthVel1) ).scalarMul(0.9)); // Added loss
+                collider.setVelo(v2New.add( collider.getVelo().sub(orthVel2) ).scalarMul(0.90));
             }
         } else {
             System.err.println("sphere can only collide with spheres atm");
