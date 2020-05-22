@@ -34,8 +34,8 @@ public abstract class Entity {
     public void setMass(double mass) { this.mass = mass; }
 
 
-    public void mirrorVeloComponent(Vec3d normVec) {
-        this.velo = this.velo.add( normVec.scalarMul( this.velo.dot(normVec) * -2 ) );
+    public void mirrorVeloComponent(Vec3d normVec, double loss) {
+        this.velo = this.velo.add( normVec.scalarMul( this.velo.dot(normVec) * (-2 + loss)  ) );
     }
 
     public abstract void performCollision(Entity other);
@@ -50,7 +50,7 @@ public abstract class Entity {
         }
 
         this.pos = this.pos.add(
-                this.velo.scalarMul(dT));
+                this.velo.scalarMul(dT)).add(this.accel.scalarMul(dT*dT/2));
 
         this.velo = this.velo.add(
                 this.accel.add(sim.GRAV_VEC.scalarMul(gravMul)).scalarMul(dT));

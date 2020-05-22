@@ -25,9 +25,9 @@ public class MainApplication extends Application {
 
     static Simulation simulation; // Don't edit!!
 
-    private static final double tickLength = 500.0;
-    private static final double canvasScaleX = 300;
-    private static final double canvasScaleY = 300;
+    private static final double tickLength = 300.0;
+    private static final double canvasScaleX = 200;
+    private static final double canvasScaleY = 200;
 
 
     ////////////////////////////////////////
@@ -128,41 +128,14 @@ public class MainApplication extends Application {
 
     private void buildSimulation() {
 
-        track1 = new SimpleTrack(0.6, 0.1, new double[]{0.1, 1.0});
-        track2 = new SimpleTrack(2, 0, new double[]{0, 5});
-
-        /*
-
-        double startX = 0.1;
-        double startY = -1;
-        double changeX = 0.01;
-        double changeY = -0.0002;
-        for(int i = 1; i<=100; i++) {
-            Marble m = new Marble(Double.MAX_VALUE, 0.08);
-            m.setPos(new Vec3d(startX+i*changeX, 0, startY+i*changeY));
-            m.setGravMul(0);
-            simulation.addEntities(m);
-        }
-
-         startX = 1;
-         startY = -1.6;
-         changeX = 0.02;
-         changeY = 0.00008;
-        for(int i = 1; i<=200; i++) {
-            Marble m = new Marble(Double.MAX_VALUE, 0.08);
-            m.setPos(new Vec3d(startX+i*changeX, 0, startY+i*changeY));
-            m.setGravMul(0);
-            simulation.addEntities(m);
-        }
-
-        */
-
+        track1 = new SimpleTrack(-1.1, -0.06, new double[]{0.1, 1.0});
+        track2 = new SimpleTrack(-2, 0, new double[]{0, 20});
 
 
 
         marble1 = new Marble(1, 0.1);
         marble2 = new Marble(1, 0.1);
-        marble1.setPos(new Vec3d(.5, 0, -0.4));
+        marble1.setPos(new Vec3d(.5, 0, -1));
         marble2.setPos(new Vec3d(.5, 0, -0.3));
         simulation.addEntities(marble1/*, marble2*/);
         simulation.addTracks(track1, track2);
@@ -227,7 +200,7 @@ public class MainApplication extends Application {
     private static void drawSphere(Sphere s, Color c) {
         Paint old = gc.getFill();
         gc.setFill(c);
-        gc.fillOval(s.getPos().x - s.getDiameter() / 2, (s.getPos().z - s.getDiameter() / 2) * -1,
+        gc.fillOval(s.getPos().x - s.getDiameter() / 2, (s.getPos().z + s.getDiameter() / 2)*-1,
                 s.getDiameter(), s.getDiameter());
 
         gc.setFill(old);
@@ -247,7 +220,7 @@ public class MainApplication extends Application {
         gc.setStroke(c);
         gc.setLineWidth(0.01);
 
-        gc.strokeLine(st.getXIntervall()[0], st.getFunc().valueAt(st.getXIntervall()[0], 0),
+        gc.strokeLine(st.getXIntervall()[0], -st.getFunc().valueAt(st.getXIntervall()[0], 0),
                 st.getXIntervall()[1], -st.getFunc().valueAt(st.getXIntervall()[1], 0));
 
         gc.setStroke(old);

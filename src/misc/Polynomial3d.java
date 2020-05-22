@@ -25,7 +25,7 @@ public class Polynomial3d {
     }
 
     public double valueAt(double x, double y) {
-        var sum = 0.0;
+        double sum = 0.0;
 
         for (int i = 0; i < this.xs.length; ++i) {
             sum += xs[i] * Math.pow(x, i);
