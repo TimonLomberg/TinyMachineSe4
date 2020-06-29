@@ -71,9 +71,9 @@ public class Simulation {
                 if (e instanceof Sphere) {
                     if(t.isColliding((Sphere) e)) {
                         //System.out.println("Colliding");
-                        System.out.println("Kugel: " + e.getPos());
-                        System.out.println("z Bahn: " + t.getFunc().valueAt(e.getPos().x, e.getPos().y));
-                        System.out.println();
+                        //System.out.println("Kugel: " + e.getPos());
+                        //System.out.println("z Bahn: " + t.getFunc().valueAt(e.getPos().x, e.getPos().y));
+                        //System.out.println();
                         ((SimpleTrack)t).performCollision((Sphere) e);
                     }
                 }
@@ -88,5 +88,9 @@ public class Simulation {
 
     public void clearEntities() {
         entities.clear();
+    }
+
+    public void clearTracks() {
+        tracks.clear();
     }
 }

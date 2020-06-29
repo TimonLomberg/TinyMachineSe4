@@ -66,10 +66,12 @@ public class SimpleTrack extends Track {
         Vec3d collPos = new Vec3d( slope > 0 ? 1 : -1, 0, isAbove ? -slope : slope ).norm();
         Vec3d parallel = Simulation.GRAV_VEC.sub( collPos.scalarMul( collPos.dot(Simulation.GRAV_VEC) ) );
 
-        // reibung fehlt
+
+        //TODO: Reibung fehlt noch
+
 
         sphere.setAccel(parallel);
 
-        sphere.mirrorVeloComponent(this.normalAt(p.x, 0), 0.05);
+        sphere.mirrorVeloComponent(this.normalAt(p.x, 0), 0.08);
     }
 }
