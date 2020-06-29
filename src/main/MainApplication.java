@@ -154,12 +154,92 @@ public class MainApplication extends Application {
 
 
         Region spacer1 = new Region();
-        spacer1.setPrefHeight(700);
+        spacer1.setPrefHeight(20);
+
+
+        Text elementsText = new Text("Elements");
+        elementsText.setFont(Font.font(18));
+        elementsText.setFill(Color.DARKORANGE);
+
+
+        VBox elementsBox = new VBox();
+        VBox.setVgrow(elementsBox, Priority.ALWAYS);
+        VBox.setMargin(elementsBox, new Insets(10,0,0, 0));
+        elementsBox.setBorder(new Border(new BorderStroke(Color.DARKORANGE, BorderStrokeStyle.SOLID,
+                CornerRadii.EMPTY, new BorderWidths(3))));
+        elementsBox.setFillWidth(true);
 
 
         Text sliderSpeedText = new Text("Speed");
         sliderSpeedText.setFont(new Font(18));
         sliderSpeedText.setFill(Color.DARKORANGE);
+
+
+        Button startButton = new Button("Start/Unpause");
+        startButton.setPrefWidth(200);
+        startButton.setMaxHeight(40);
+        startButton.setPadding(new Insets(15,0,15,0));
+        startButton.setBackground(new Background(new BackgroundFill(Color.DARKORANGE, CornerRadii.EMPTY, Insets.EMPTY)));
+        startButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+                if(simulation.isPaused())  {
+                    simulation.setPaused(false);
+                    startButton.setText("Pause");
+                } else {
+                    simulation.setPaused(true);
+                    startButton.setText("Start/Unpause");
+                }
+
+            }
+        });
+        startButton.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                startButton.setBackground(new Background(new BackgroundFill(Color.ORANGERED, CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+        });
+        startButton.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                startButton.setBackground(new Background(new BackgroundFill(Color.DARKORANGE, CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+        });
+
+
+        Region spacer2 = new Region();
+        spacer2.setPrefHeight(10);
+
+
+        Button resetButton = new Button("Reset");
+        resetButton.setPrefWidth(200);
+        resetButton.setPrefHeight(40);
+        resetButton.setPadding(new Insets(15,0,15,0));
+        resetButton.setBackground(new Background(new BackgroundFill(Color.DARKORANGE, CornerRadii.EMPTY, Insets.EMPTY)));
+        resetButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                reset();
+                simulation.setPaused(true);
+                startButton.setText("Start/Unpause");
+            }
+        });
+        resetButton.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                resetButton.setBackground(new Background(new BackgroundFill(Color.ORANGERED, CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+        });
+        resetButton.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                resetButton.setBackground(new Background(new BackgroundFill(Color.DARKORANGE, CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+        });
+
+        Region spacer3 = new Region();
+        spacer3.setPrefHeight(50);
 
 
         VBox controlPanel = new VBox();
@@ -169,7 +249,8 @@ public class MainApplication extends Application {
         controlPanel.setBorder(new Border(new BorderStroke(null , null , null, Color.DARKORANGE,
                 BorderStrokeStyle.NONE, BorderStrokeStyle.NONE, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID,
                 CornerRadii.EMPTY, new BorderWidths(5), Insets.EMPTY)));
-        controlPanel.getChildren().addAll(controlsText, spacer1, sliderSpeedText);
+        controlPanel.setFillWidth(true);
+        controlPanel.getChildren().addAll(controlsText, spacer1, elementsText, elementsBox, sliderSpeedText, startButton, spacer2, resetButton, spacer3);
 
 
         TextField textField = new TextField();
