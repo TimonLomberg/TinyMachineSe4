@@ -1,5 +1,8 @@
 package entities;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import main.Simulation;
 import misc.Vec3d;
 
@@ -18,6 +21,9 @@ public abstract class Entity {
         this.velo = velo;
         this.accel = accel;
         this.mass = mass;
+
+
+
     }
 
     public Vec3d getPos() { return this.pos; }

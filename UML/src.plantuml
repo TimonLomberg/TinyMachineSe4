@@ -1,9 +1,9 @@
 @startuml
 
-title __MAIN's Class Diagram__\n
+title __SRC's Class Diagram__\n
 
-  namespace main {
-    class MainApplication {
+  namespace  {
+    class main.MainApplication {
         {static} ~ gc : GraphicsContext
         {static} ~ simulation : Simulation
         {static} - canvasScaleX : double
@@ -29,30 +29,7 @@ title __MAIN's Class Diagram__\n
   }
   
 
-  namespace main {
-    class main.Simulation {
-        {static} + GRAV_CONST : double
-        {static} + GRAV_VEC : Vec3d
-        - entities : ArrayList<Entity>
-        - paused : boolean
-        - tracks : ArrayList<Track>
-        + Simulation()
-        + addEntities()
-        + addTracks()
-        + clearEntities()
-        + getEntitesWithoutSelf()
-        + getEntities()
-        + getTracks()
-        + isPaused()
-        + removeEntity()
-        + removeTrack()
-        + setPaused()
-        + tick()
-    }
-  }
-  
-
-  MainApplication -up-|> javafx.application.Application
+  main.MainApplication -up-|> javafx.application.Application
 
 
 right footer
