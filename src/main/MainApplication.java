@@ -13,10 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToolBar;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -37,6 +34,7 @@ import misc.DrawCircle;
 import misc.Vec3d;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -59,7 +57,6 @@ public class MainApplication extends Application {
     private static final Scale simSceneScale = new Scale(200,200);
 
 
-
     ////////////////////////////////////////
     /*          Simulation Members        */
     ////////////////////////////////////////
@@ -70,6 +67,8 @@ public class MainApplication extends Application {
 
     private static ArrayList<Object> samples = new ArrayList<Object>() {
     };
+
+    private static HashMap<Object, String> objNames = new HashMap<>();
 
 
     ////////////////////////////////////////
@@ -126,6 +125,10 @@ public class MainApplication extends Application {
     static GraphicsContext gc; // Don't edit!!
     static Pane simPane;
 
+
+    double[] simCoordToDrawCoord(double x, double y) {
+        return new double[]{ x, -y };
+    }
 
 
     @Override
@@ -337,24 +340,35 @@ public class MainApplication extends Application {
         for(Object e : samples) {
             final double psm = 0.5;
 
+            // javafx.scene.shape.Rectangle rect = new javafx.scene.shape.Rectangle(elementsBox.getPrefWidth(), 100);
+
             Pane container = new Pane();
             //container.setMinWidth(100);
             container.setMinHeight(100);
             container.prefWidthProperty().bind(elementsScrollPane.widthProperty());
+            // container.setClip(rect);
 
             if(e instanceof Track) {
                 SimpleTrack st = (SimpleTrack) e;
-                Line line = new Line(
+                objNames.put(e, e.toString());
+
+
+                /*Line line = new Line(
                         st.getXIntervall()[0] + container.getLayoutX(),
                         st.getFunc().valueAt(st.getXIntervall()[0],0) - container.getLayoutY(),
                         st.getXIntervall()[1] + container.getLayoutX(),
                         st.getFunc().valueAt(st.getXIntervall()[1],0) - container.getLayoutY()
-                );
+                );*/
+
+
+                /*line.getTransforms().add(new Scale(0.1, 1));
                 line.setStrokeWidth(0.02);
                 line.setStroke(Color.RED);
-                line.getTransforms().add(simSceneScale);
+                line.getTransforms().add(simSceneScale);*/
+
+                Text t = new Text(e.toString());
                 container.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
-                container.getChildren().add(line);
+                container.getChildren().add(t);
             }
 
             elementsBox.getChildren().add(container);
@@ -553,7 +567,15 @@ public class MainApplication extends Application {
         simPane.getChildren().add(line);
         line.getTransforms().add(simSceneScale);
 
+        if (simulation.isPaused()) {
+            Text t = new Text(objNames.get(st));
+            t.setX(line.getStartX());
+            t.setY(line.getStartY());
 
+            t.toFront();
+
+            simPane.getChildren().add(t);
+        }
     }
 
     private static void drawAllShapes() {
