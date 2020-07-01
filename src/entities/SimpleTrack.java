@@ -11,21 +11,14 @@ public class SimpleTrack extends Track {
     }
 
     @Override
-    public boolean isColliding(Sphere sphere) {
+    public Vec3d isColliding(Sphere sphere) {
 
 
-        double slope = this.trackFunc.xFactors()[1];
+        /*double slope = this.trackFunc.xFactors()[1];
 
         Vec3d p = sphere.getPos();
         double c = p.z - this.trackFunc.valueAt(p.x, 0);
-        //var d = Math.sqrt( Math.pow(c, 2) - 1 - Math.pow(this.trackFunc.xFactors()[1], 2) );
         double d = this.normalAt(p.x, 0).dot(new Vec3d(0,0,1)) * c;
-        /*
-        System.out.println("p.x: " + p.z);
-        System.out.println("value at: " +this.trackFunc.valueAt(p.x, 0));
-        System.out.println("c: "+ c);
-        System.out.println("d: "+ d);
-        */
 
         boolean cond1 = sphere.getDiameter()/2 > d && d > 0;
 
@@ -33,7 +26,7 @@ public class SimpleTrack extends Track {
         double[] newIntervall = new double[]{ this.xIntervall[0] + add, this.xIntervall[1] + add };
 
         // außerhalb bahn intervall (könnte mit ecke kollidieren)
-         if (p.x < newIntervall[0] || p.x > newIntervall[1]) {
+        if (p.x < newIntervall[0] || p.x > newIntervall[1]) {
             return cond1
                     && Math.sqrt(Math.pow(p.x - this.xIntervall[0], 2)
                     + Math.pow(p.z - this.trackFunc.valueAt(this.xIntervall[0], 0), 2)) < sphere.getDiameter()/2
@@ -42,23 +35,47 @@ public class SimpleTrack extends Track {
                     + Math.pow(p.z - this.trackFunc.valueAt(this.xIntervall[1], 0), 2)) < sphere.getDiameter()/2;
 
         } else {
-
             return cond1;
-        }
+        }*/
 
+
+        // to add collision mit seiten
+
+        final Vec3d trackBeg = new Vec3d(
+                this.xIntervall[0],
+                0,
+                this.trackFunc.valueAt(this.xIntervall[0], 0)
+        );
+
+        final Vec3d trackEnd = new Vec3d(
+                this.xIntervall[1],
+                0,
+                this.trackFunc.valueAt(this.xIntervall[1], 0)
+        );
+
+        final Vec3d trackDir = trackEnd.sub(trackBeg);
+        final Vec3d trackBegToSphereCenter = sphere.getPos().sub(trackBeg);
+
+        final Vec3d projected = trackDir.scalarMul(trackBegToSphereCenter.dot(trackDir) / Math.pow(trackDir.length(), 2));
+
+        final Vec3d trackToSphere = sphere.getPos().sub( trackBeg.add(projected) );
+
+        if (trackToSphere.length() <= sphere.getDiameter() / 2) {
+
+            final Vec3d absCollPosOnTrack = trackBeg.add(projected);
+            final double correction = (sphere.getDiameter()/2) - sphere.getPos().sub(absCollPosOnTrack).length();
+
+            sphere.setPos(sphere.getPos().add(trackToSphere.norm().scalarMul(correction)));
+
+            return trackBeg.add(projected);
+        } else {
+            return null;
+        }
     }
 
     // wenn kolidiert mit cond1
-    public void performCollision(Sphere sphere) {
-        // collPos: vektor von kugel mitte auf kollisions pos (normiert)
-        // x = -1 wenn steigung neg
-        // x = 1  wenn steigung pos
-        // z = -a wenn kugel von oben
-        // z = a  wenn kugen von unten
-
-        System.out.println();
-
-        Vec3d p = sphere.getPos();
+    public void performCollision(Sphere sphere, Vec3d collPos) {
+        /*Vec3d p = sphere.getPos();
 
         double slope = this.trackFunc.derived().valueAt(p.x, 0);
         boolean isAbove = (p.z - sphere.getDiameter()/2) > this.trackFunc.valueAt(p.x, 0);
@@ -72,6 +89,22 @@ public class SimpleTrack extends Track {
 
         sphere.setAccel(parallel);
 
-        sphere.mirrorVeloComponent(this.normalAt(p.x, 0), 0.08);
+        sphere.mirrorVeloComponent(this.normalAt(p.x, 0), 0.08);*/
+
+        final Vec3d sphereCenterToCollPos = collPos.sub(sphere.getPos());
+
+        final Vec3d sphereCenterToTrackInDirOfVel = sphere.getVelo().scalarMul(
+                sphereCenterToCollPos.lengthSquared() / sphere.getVelo().norm().dot(sphereCenterToCollPos));
+
+
+        final Vec3d orthVelComp = sphereCenterToCollPos.norm().scalarMul(
+                sphere.getVelo().dot(sphereCenterToCollPos.norm())
+        );
+
+
+        sphere.setVelo(sphere.getVelo().sub(orthVelComp.scalarMul(2)).scalarMul(0.98));
+
+
+        System.out.print("");
     }
 }

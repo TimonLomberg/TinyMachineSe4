@@ -31,8 +31,8 @@ public class Track {
         return this.xIntervall;
     }
 
-    public boolean isColliding(Sphere sphere) {
-        Vec3d pos = sphere.getPos();
+    public Vec3d isColliding(Sphere sphere) {
+        /*Vec3d pos = sphere.getPos();
         Polynomial3d funcX = this.trackFunc.derivedByXIgnoreY();
         Polynomial3d funcY = this.trackFunc.derivedByYIgnoreX();
 
@@ -43,13 +43,15 @@ public class Track {
         );
 
         double funcValue = this.trackFunc.valueAt(sphere.getPos().x, sphere.getPos().y);
-        double r = sphere.getDiameter()/2;
+        double r = sphere.getDiameter() / 2;
 
         // Sphere kann nicht kollidieren, spart (hoffentlich) rechenaufwand
-        if (sphere.getPos().z - r > funcValue + (epsilon * r)) {
+        if (sphere.getPos().z - r > funcValue + (epsilon * 2 * r)) {
             return false;
         }
 
-        return false;
+        return false;*/
+
+        return null;
     }
 }

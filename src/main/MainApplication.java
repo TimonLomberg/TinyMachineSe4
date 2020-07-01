@@ -52,7 +52,7 @@ public class MainApplication extends Application {
 
     static Simulation simulation; // Don't edit!!
 
-    private static final double tickFrequency = 200.0;
+    private static final double tickFrequency = 500;
     private static final double canvasScaleX = 200;
     private static final double canvasScaleY = 200;
 
@@ -104,7 +104,7 @@ public class MainApplication extends Application {
         simulation.addEntities(marble1, marble2);
         simulation.addTracks(track1, track2);
         marble1.setVelo(new Vec3d(0.05, 0, 0));
-        marble2.setVelo(new Vec3d(1,0,0));
+        //marble2.setVelo(new Vec3d(1,0,0));
 
 
 

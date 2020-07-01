@@ -69,12 +69,10 @@ public class Simulation {
         for(Track t : this.getTracks()) {
             for(Entity e : this.getEntities()) {
                 if (e instanceof Sphere) {
-                    if(t.isColliding((Sphere) e)) {
-                        //System.out.println("Colliding");
-                        //System.out.println("Kugel: " + e.getPos());
-                        //System.out.println("z Bahn: " + t.getFunc().valueAt(e.getPos().x, e.getPos().y));
-                        //System.out.println();
-                        ((SimpleTrack)t).performCollision((Sphere) e);
+
+                    Vec3d cP = ((SimpleTrack)t).isColliding((Sphere) e);
+                    if (cP != null) {
+                        ((SimpleTrack)t).performCollision((Sphere) e, cP);
                     }
                 }
             }
