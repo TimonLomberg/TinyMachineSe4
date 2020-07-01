@@ -2,6 +2,7 @@ package main;
 
 import entities.*;
 import javafx.animation.AnimationTimer;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -14,6 +15,8 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -30,6 +33,7 @@ import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 import misc.DrawCircle;
 import misc.Vec3d;
 
@@ -135,7 +139,14 @@ public class MainApplication extends Application {
     public void start(Stage primaryStage) {
 
         samples.add(new SimpleTrack(-1.1, -0.1, new double[]{0.1, 1.0}));
+        samples.add(new SimpleTrack(100, 0.1, new double[]{0.1, 1.0}));
+        samples.add(new SimpleTrack(-1, 1, new double[]{0.1, 0.5}));
         samples.add(new SimpleTrack(-1.1, -0.1, new double[]{0.1, 1.0}));
+        samples.add(new SimpleTrack(-1.1, -0.1, new double[]{0.1, 1.0}));
+        samples.add(new SimpleTrack(-1.1, -0.1, new double[]{0.1, 1.0}));
+        samples.add(new SimpleTrack(-1.1, -0.1, new double[]{0.1, 1.0}));
+
+
 
         Text windowText = new Text("Rolling Stones");
         windowText.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, FontPosture.ITALIC,20));
@@ -183,6 +194,8 @@ public class MainApplication extends Application {
         elementsScrollPane.setBackground(Background.EMPTY);
         elementsScrollPane.setBorder(new Border(new BorderStroke(Color.DARKORANGE, BorderStrokeStyle.SOLID,
                 CornerRadii.EMPTY, new BorderWidths(3))));
+        elementsScrollPane.setMaxHeight(400);
+        elementsScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
 
 
@@ -191,11 +204,18 @@ public class MainApplication extends Application {
         sliderSpeedText.setFill(Color.DARKORANGE);
 
 
+        DropShadow ds = new DropShadow();
+        ds.setBlurType(BlurType.GAUSSIAN);
+        ds.setColor(Color.BLACK);
+        ds.setOffsetX(3);
+        ds.setOffsetY(3);
+
         Button startButton = new Button("Start/Unpause");
         startButton.setPrefWidth(200);
         startButton.setMaxHeight(40);
         startButton.setPadding(new Insets(15,0,15,0));
         startButton.setBackground(new Background(new BackgroundFill(Color.DARKORANGE, CornerRadii.EMPTY, Insets.EMPTY)));
+        startButton.setEffect(ds);
         startButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -222,6 +242,12 @@ public class MainApplication extends Application {
                 startButton.setBackground(new Background(new BackgroundFill(Color.DARKORANGE, CornerRadii.EMPTY, Insets.EMPTY)));
             }
         });
+        startButton.setOnMousePressed((e) ->  {
+            startButton.setEffect(null);
+        });
+        startButton.setOnMouseReleased((e) -> {
+            startButton.setEffect(ds);
+        });
 
 
         Region spacer2 = new Region();
@@ -231,6 +257,7 @@ public class MainApplication extends Application {
         Button resetButton = new Button("Reset");
         resetButton.setPrefWidth(200);
         resetButton.setPrefHeight(40);
+        resetButton.setEffect(ds);
         resetButton.setPadding(new Insets(15,0,15,0));
         resetButton.setBackground(new Background(new BackgroundFill(Color.DARKORANGE, CornerRadii.EMPTY, Insets.EMPTY)));
         resetButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -252,6 +279,12 @@ public class MainApplication extends Application {
             public void handle(MouseEvent event) {
                 resetButton.setBackground(new Background(new BackgroundFill(Color.DARKORANGE, CornerRadii.EMPTY, Insets.EMPTY)));
             }
+        });
+        resetButton.setOnMousePressed((e) ->  {
+            resetButton.setEffect(null);
+        });
+        resetButton.setOnMouseReleased((e) -> {
+            resetButton.setEffect(ds);
         });
 
         Region spacer3 = new Region();
@@ -321,6 +354,10 @@ public class MainApplication extends Application {
         MainApplication.simPane = simPane;
         simPane.setPrefHeight(simPanelSizeY);
         simPane.setPrefWidth(simPanelSizeX);
+        simPane.setMouseTransparent(false);
+        simPane.setPickOnBounds(false);
+        simPane.toBack();
+
 
         BorderPane simBorderPane = new BorderPane();
         simBorderPane.setCenter(simPane);
@@ -342,33 +379,46 @@ public class MainApplication extends Application {
 
             // javafx.scene.shape.Rectangle rect = new javafx.scene.shape.Rectangle(elementsBox.getPrefWidth(), 100);
 
-            Pane container = new Pane();
-            //container.setMinWidth(100);
+            StackPane container = new StackPane();
             container.setMinHeight(100);
             container.prefWidthProperty().bind(elementsScrollPane.widthProperty());
-            // container.setClip(rect);
+            container.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+            container.setAlignment(Pos.CENTER);
+            container.setBorder(new Border(new BorderStroke(Color.ORANGERED, Color.ORANGERED, Color.ORANGERED, Color.ORANGERED,
+                    BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
+                    CornerRadii.EMPTY, new BorderWidths(2), Insets.EMPTY)));
 
             if(e instanceof Track) {
                 SimpleTrack st = (SimpleTrack) e;
                 objNames.put(e, e.toString());
 
 
-                /*Line line = new Line(
-                        st.getXIntervall()[0] + container.getLayoutX(),
-                        st.getFunc().valueAt(st.getXIntervall()[0],0) - container.getLayoutY(),
-                        st.getXIntervall()[1] + container.getLayoutX(),
-                        st.getFunc().valueAt(st.getXIntervall()[1],0) - container.getLayoutY()
-                );*/
+                double offsetX = 0.2;
+                double offsetY = -0.1;
+                Line line = new Line(
+                        -1*(st.getXIntervall()[1] - st.getXIntervall()[0]) + offsetX,
+                        -1*(-st.getFunc().valueAt(st.getXIntervall()[1],0) + st.getFunc().valueAt(st.getXIntervall()[0],0)) + offsetY,
+                        0.5*(st.getXIntervall()[1] - st.getXIntervall()[0]) + offsetX,
+                        0.5*(-st.getFunc().valueAt(st.getXIntervall()[1],0) + st.getFunc().valueAt(st.getXIntervall()[0],0)) + offsetY
+                );
+                //line = new Line(0, 0, 1.0, 1.0);
+                System.out.println("x1: " + st.getXIntervall()[0] + " y1: " + st.getFunc().valueAt(st.getXIntervall()[0],0));
+                System.out.println("x2: " + st.getXIntervall()[1] + " y2: " + st.getFunc().valueAt(st.getXIntervall()[1],0));
 
+                //Line line = new Line(0,0,0.1,0.1);
 
-                /*line.getTransforms().add(new Scale(0.1, 1));
+                line.getTransforms().add(new Scale(0.5, 0.5));
                 line.setStrokeWidth(0.02);
                 line.setStroke(Color.RED);
-                line.getTransforms().add(simSceneScale);*/
+                line.getTransforms().add(simSceneScale);
+                container.getChildren().add(line);
+                line.toFront();
 
-                Text t = new Text(e.toString());
-                container.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
-                container.getChildren().add(t);
+                //Text t = new Text(e.toString());
+                //.setFont(new Font(Font.getDefault().getFamily(), 16));
+                //container.getChildren().add(t);
+
+
             }
 
             elementsBox.getChildren().add(container);
@@ -515,7 +565,7 @@ public class MainApplication extends Application {
         circle.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (simulation.isPaused()) {
+                if (simulation.isPaused() && event.getSource() instanceof Shape) {
                     double offsetX = (event.getSceneX() - orgSceneX[0]) / simSceneScale.getX();
                     double offsetY = (event.getSceneY() - orgSceneY[0]) / simSceneScale.getY();
                     Circle c = (Circle) (event.getSource());
