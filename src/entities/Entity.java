@@ -55,7 +55,8 @@ public abstract class Entity {
         this.pos = this.pos.add(
                 this.velo.scalarMul(dT)).add(this.accel.scalarMul(dT*dT/2));
 
-        this.velo = this.velo.add(
-                this.accel.add(sim.GRAV_VEC.scalarMul(gravMul)).scalarMul(dT));
+        this.accel = Simulation.GRAV_VEC.scalarMul(gravMul);
+
+        this.velo = this.velo.add(this.accel.scalarMul(dT));
     }
 }

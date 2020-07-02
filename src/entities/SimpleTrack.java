@@ -61,12 +61,6 @@ public class SimpleTrack extends Track {
         final Vec3d trackToSphere = sphere.getPos().sub( trackBeg.add(projected) );
 
         if (trackToSphere.length() <= sphere.getDiameter() / 2) {
-
-            final Vec3d absCollPosOnTrack = trackBeg.add(projected);
-            final double correction = (sphere.getDiameter()/2) - sphere.getPos().sub(absCollPosOnTrack).length();
-
-            sphere.setPos(sphere.getPos().add(trackToSphere.norm().scalarMul(correction)));
-
             return trackBeg.add(projected);
         } else {
             return null;
@@ -91,6 +85,27 @@ public class SimpleTrack extends Track {
 
         sphere.mirrorVeloComponent(this.normalAt(p.x, 0), 0.08);*/
 
+
+
+        /* correct for sphere possibly being inside track */
+
+        /* calculate correnction factor */
+        final Vec3d trackToSphere = sphere.getPos().sub(collPos);
+        final double correction = (sphere.getDiameter()/2) - sphere.getPos().sub(collPos).length();
+
+        // set correct position
+        sphere.setPos(sphere.getPos().add(trackToSphere.norm().scalarMul(correction)));
+
+
+        // 'korregierter' Betrag ||velo|| der Geschwindigkeit
+        // mit  accel = (current_velo^2 - actual_velo^2) / 2traveled_dist gelöst für start_velo
+        // also actual_velo = sqrt( current_velo^2 - 2 * accel * traveled_dist )
+        final double shouldBeVel = Math.sqrt( Math.pow(sphere.getVelo().length(), 2) - 2 * sphere.getAccel().length() * correction );
+
+        sphere.setVelo(sphere.getVelo().norm().scalarMul(shouldBeVel));
+
+
+        /* do actual collision calculations */
         final Vec3d sphereCenterToCollPos = collPos.sub(sphere.getPos());
 
         final Vec3d sphereCenterToTrackInDirOfVel = sphere.getVelo().scalarMul(
@@ -102,7 +117,8 @@ public class SimpleTrack extends Track {
         );
 
 
-        sphere.setVelo(sphere.getVelo().sub(orthVelComp.scalarMul(2)).scalarMul(0.98));
+        // orthogonalen anteil umkehren
+        sphere.setVelo(sphere.getVelo().sub(orthVelComp.scalarMul(2)));
 
 
         System.out.print("");

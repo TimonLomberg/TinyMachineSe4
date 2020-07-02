@@ -102,4 +102,13 @@ public class Vec3d {
         return ret;
     }
 
+    public Vec3d parallelPartOf(Vec3d b) {
+        // todo testing
+        return b.scalarMul( this.dot(b) );
+    }
+
+    public Vec3d orthogonalPartOf(Vec3d b) {
+        // todo testing
+        return b.sub( this.parallelPartOf(b) );
+    }
 }

@@ -101,10 +101,10 @@ public class MainApplication extends Application {
         marble2 = new Marble(1, 0.2);
         marble1.setPos(new Vec3d(.5, 0, -1.07));
         marble2.setPos(new Vec3d(.5, 0, -1.5));
-        simulation.addEntities(marble1, marble2);
+        simulation.addEntities(marble2);
         simulation.addTracks(track1, track2);
         marble1.setVelo(new Vec3d(0.05, 0, 0));
-        //marble2.setVelo(new Vec3d(1,0,0));
+        marble2.setVelo(new Vec3d(1,0,0));
 
 
 
