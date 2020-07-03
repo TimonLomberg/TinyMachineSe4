@@ -9,12 +9,23 @@ import misc.Drawable;
 import misc.Vec3d;
 
 public class Track implements Cloneable, Drawable {
-    // private Polynomial3d trackFunc;
-
+    
     private double slope;
     private double zOffset;
-
     private double[] xInterval;
+    private double elasticity = 1;
+
+    private void recalculateFunc(Vec3d a, Vec3d b) {
+        final double xDiff = b.x - a.x;
+        final double zDiff = b.z - a.z;
+
+        final double slope = zDiff / xDiff;
+        final double zOff = a.z - slope * a.x;
+
+        this.slope = slope;
+        this.zOffset = zOff;
+        this.xInterval = new double[]{ a.x, b.x };
+    }
 
     public Track(double c, double s, double[] xInterval) {
         this.setZOffset(c);
@@ -22,8 +33,32 @@ public class Track implements Cloneable, Drawable {
         this.xInterval = xInterval;
     }
 
+    public Track(Vec3d a, Vec3d b) {
+        recalculateFunc(a, b);
+    }
+
+    public Vec3d startPoint() {
+        return new Vec3d(this.minBound(), 0, this.heightAt(this.minBound()));
+    }
+
+    public Vec3d endPoint() {
+        return new Vec3d(this.maxBound(), 0, this.heightAt(this.maxBound()));
+    }
+
+    public void setPoints(Vec3d a, Vec3d b) {
+        recalculateFunc(a, b);
+    }
+
     public Track clone() {
         return new Track(zOffset, slope, xInterval.clone());
+    }
+
+    public void setElasticity(double value) {
+        this.elasticity = value;
+    }
+
+    public double elasticity() {
+        return this.elasticity;
     }
 
     @Override
@@ -111,7 +146,7 @@ public class Track implements Cloneable, Drawable {
         // also actual_velo = sqrt( current_velo^2 - 2 * accel * traveled_dist )
         final double shouldBeVel = Math.sqrt( Math.pow(sphere.getVelo().length(), 2) - 2 * sphere.getAccel().length() * correction );
 
-        sphere.setVelo(sphere.getVelo().norm().scalarMul(shouldBeVel));
+        sphere.setVelo( sphere.getVelo().norm().scalarMul(shouldBeVel).scalarMul(elasticity) );
 
         /* do actual collision calculations */
 
@@ -132,7 +167,7 @@ public class Track implements Cloneable, Drawable {
             );
 
             // orthogonalen anteil umkehren
-            sphere.setVelo(sphere.getVelo().sub(orthVelComp.scalarMul(2)));
+            sphere.setVelo( sphere.getVelo().sub(orthVelComp.scalarMul(2)).scalarMul(elasticity) );
         }
     }
 
