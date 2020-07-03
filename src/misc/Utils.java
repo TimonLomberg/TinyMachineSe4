@@ -42,4 +42,9 @@ public final class Utils {
         System.err.println("rect intersect not corrected yet");
         return false;
     }
+
+    public static void panic(String msg) {
+        System.err.println("Panic: " + msg);
+        System.exit(1);
+    }
 }

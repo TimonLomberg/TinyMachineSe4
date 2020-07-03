@@ -3,9 +3,7 @@ package main;
 import entities.*;
 import entities.Rectangle;
 import javafx.animation.AnimationTimer;
-import javafx.animation.PauseTransition;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -13,7 +11,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -34,17 +31,12 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
-import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.util.Duration;
-import misc.DrawCircle;
+import misc.Drawable;
 import misc.Vec3d;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 
 public class MainApplication extends Application {
@@ -72,11 +64,9 @@ public class MainApplication extends Application {
 
 
     private static Marble marble1, marble2;
-    private static SimpleTrack track1, track2;
+    private static Track track1, track2;
 
-    private static ArrayList<Object> samples = new ArrayList<Object>() {};
-
-    private static HashMap<Object, String> objNames = new HashMap<>();
+    private static ArrayList<Drawable> samples = new ArrayList<>();
 
 
     ////////////////////////////////////////
@@ -91,14 +81,8 @@ public class MainApplication extends Application {
 
     private void buildSimulation() {
 
-
-
-
-
-
-
-        track1 = new SimpleTrack(-1.1, -0.1, new double[]{0.1, 1.0});
-        track2 = new SimpleTrack(-2, 0, new double[]{0, 20});
+        track1 = new Track(-1.1, -0.1, new double[]{0.1, 1.0});
+        track2 = new Track(-2, 0, new double[]{0, 20});
 
 
         marble1 = new Marble(1, 0.1);
@@ -108,9 +92,7 @@ public class MainApplication extends Application {
         simulation.addEntities(marble2);
         simulation.addTracks(track1, track2);
         marble1.setVelo(new Vec3d(0.05, 0, 0));
-        marble2.setVelo(new Vec3d(1,0,0));
-
-
+        // marble2.setVelo(new Vec3d(1,0,0));
 
     }
 
@@ -126,7 +108,7 @@ public class MainApplication extends Application {
 
 
     ////////////////////////////////////////
-    /*             Program Flow           */
+    /*             Horrible Program Flow  */
     ////////////////////////////////////////
 
 
@@ -142,9 +124,9 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        samples.add(new SimpleTrack(-1.2, -0.1, new double[]{0.1, 1.0}));
-        samples.add(new SimpleTrack(-1, 0.1, new double[]{0.1, 1.0}));
-        samples.add(new SimpleTrack(-1, 1, new double[]{0.1, 0.5}));
+        samples.add(new Track(-1.2, -0.1, new double[]{0.1, 1.0}));
+        samples.add(new Track(-1, 0.1, new double[]{0.1, 1.0}));
+        samples.add(new Track(-1, 1, new double[]{0.1, 0.5}));
 
 
 
@@ -339,7 +321,7 @@ public class MainApplication extends Application {
         borderPane.setCenter(simBorderPane);
 
 
-        for(Object e : samples) {
+        for(Drawable e : samples) {
             final double psm = 0.5;
 
             // javafx.scene.shape.Rectangle rect = new javafx.scene.shape.Rectangle(elementsBox.getPrefWidth(), 100);
@@ -355,13 +337,12 @@ public class MainApplication extends Application {
 
             container.setOnMouseClicked((a) -> {
                 if (simulation.isPaused()) {
-                    if(e instanceof SimpleTrack) {
-                        try {
-                            simulation.addTracks(((SimpleTrack) e).clone());
-                            drawAllShapesNew();
-                        } catch (CloneNotSupportedException cloneNotSupportedException) {
+                    System.out.println("test");
 
-                        }
+                    if(e instanceof Track) {
+                        simulation.addTracks(((Track) e).clone());
+                        simPane.getChildren().clear();
+                        drawAllShapesNew();
                     } else if(e instanceof Marble) {
 
                     }
@@ -370,38 +351,25 @@ public class MainApplication extends Application {
             });
 
             if(e instanceof Track) {
-                SimpleTrack st = (SimpleTrack) e;
-                objNames.put(e, e.toString());
+                Track st = (Track) e;
 
 
                 double offsetX = 0.2;
                 double offsetY = -0.1;
-                Line line = new Line(
-                        -1*(st.getXIntervall()[1] - st.getXIntervall()[0]) + offsetX,
-                        -1*(-st.getFunc().valueAt(st.getXIntervall()[1],0) + st.getFunc().valueAt(st.getXIntervall()[0],0)) + offsetY,
-                        0.5*(st.getXIntervall()[1] - st.getXIntervall()[0]) + offsetX,
-                        0.5*(-st.getFunc().valueAt(st.getXIntervall()[1],0) + st.getFunc().valueAt(st.getXIntervall()[0],0)) + offsetY
+                Shape line = new Line(
+                        -1*(st.maxBound() - st.minBound()) + offsetX,
+                        -1*(-st.heightAt(st.maxBound()) + st.heightAt(st.minBound())) + offsetY,
+                        0.5*(st.maxBound() - st.minBound()) + offsetX,
+                        0.5*(-st.heightAt(st.maxBound()) + st.heightAt(st.minBound())) + offsetY
                 );
-                //line = new Line(0, 0, 1.0, 1.0);
-                //System.out.println("x1: " + st.getXIntervall()[0] + " y1: " + st.getFunc().valueAt(st.getXIntervall()[0],0));
-                //System.out.println("x2: " + st.getXIntervall()[1] + " y2: " + st.getFunc().valueAt(st.getXIntervall()[1],0));
-
-                //Line line = new Line(0,0,0.1,0.1);
 
                 line.getTransforms().add(new Scale(0.5, 0.5));
                 line.setStrokeWidth(0.02);
                 line.setStroke(Color.RED);
                 line.getTransforms().add(simSceneScale);
-                container.getChildren().add(line);
                 line.toFront();
 
-                //Text t = new Text(e.toString());
-                //.setFont(new Font(Font.getDefault().getFamily(), 16));
-                //container.getChildren().add(t);
-
-
-
-
+                container.getChildren().add(line);
             }
 
             elementsBox.getChildren().add(container);
@@ -530,6 +498,7 @@ public class MainApplication extends Application {
     private static void drawSphereNew(Sphere s, Color c) {
         Circle circle = new Circle(s.getPos().x, (s.getPos().z)*-1,
                 s.getDiameter()/2, c);
+
         simPane.getChildren().add(circle);
         circle.getTransforms().add(simSceneScale);
 
@@ -581,22 +550,20 @@ public class MainApplication extends Application {
         gc.setFill(old);
     }
 
-    private static void drawSimpleTrack(SimpleTrack st, Color c) {
+    private static void drawSimpleTrack(Track st, Color c) {
         Paint old = gc.getStroke();
         gc.setStroke(c);
         gc.setLineWidth(0.01);
 
-        gc.strokeLine(st.getXIntervall()[0], -st.getFunc().valueAt(st.getXIntervall()[0], 0),
-                st.getXIntervall()[1], -st.getFunc().valueAt(st.getXIntervall()[1], 0));
+        gc.strokeLine(st.minBound(), -st.heightAt(st.minBound()),
+                st.maxBound(), -st.heightAt(st.maxBound()));
 
         gc.setStroke(old);
     }
 
-    private static void drawSimpleTrackNew(SimpleTrack st, Color c) {
-        Line line = new Line(st.getXIntervall()[0], -st.getFunc().valueAt(st.getXIntervall()[0], 0),
-                st.getXIntervall()[1], -st.getFunc().valueAt(st.getXIntervall()[1], 0));
-        line.setStroke(c);
-        line.setStrokeWidth(0.04);
+    private static void drawSimpleTrackNew(Track st, Color c) {
+        Shape line = st.intoShape(c);
+
         simPane.getChildren().add(line);
         line.getTransforms().add(simSceneScale);
 
@@ -633,31 +600,18 @@ public class MainApplication extends Application {
                     orgSceneX[0] = event.getSceneX();
                     orgSceneY[0] = event.getSceneY();
 
-                    st.getXIntervall()[0] = st.getXIntervall()[0] + offsetX;
-                    st.getXIntervall()[1] = st.getXIntervall()[1] + offsetX;
-                    st.getFunc().xFactors()[0] = st.getFunc().xFactors()[0] - offsetY;
+                    st.setMinBound(st.minBound() + offsetX);
+                    st.setMaxBound(st.maxBound() + offsetX);
+                    st.setZOffset(st.zOffset() - offsetY);
                 }
             }
         });
-
-
-        if (simulation.isPaused()) {
-            Text t = new Text(objNames.get(st));
-            t.setX(line.getStartX());
-            t.setY(line.getStartY());
-
-            t.toFront();
-
-            simPane.getChildren().add(t);
-        }
     }
 
     private static void drawAllShapes() {
 
         for(Track t : simulation.getTracks()) {
-            if(t instanceof SimpleTrack) {
-                drawSimpleTrack((SimpleTrack) t, Color.RED);
-            }
+            drawSimpleTrack((Track) t, Color.RED);
         }
 
         for (Entity e : simulation.getEntities()) {
@@ -673,9 +627,7 @@ public class MainApplication extends Application {
 
     private static void drawAllShapesNew() {
         for(Track t : simulation.getTracks()) {
-            if(t instanceof SimpleTrack) {
-                drawSimpleTrackNew((SimpleTrack) t, Color.RED);
-            }
+            drawSimpleTrackNew((Track) t, Color.RED);
         }
 
         for (Entity e : simulation.getEntities()) {

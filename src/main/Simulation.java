@@ -1,9 +1,9 @@
 package main;
 
 import entities.Entity;
-import entities.SimpleTrack;
-import entities.Sphere;
 import entities.Track;
+import entities.Sphere;
+import javafx.util.Pair;
 import misc.Vec3d;
 
 import java.util.ArrayList;
@@ -70,9 +70,10 @@ public class Simulation {
             for(Entity e : this.getEntities()) {
                 if (e instanceof Sphere) {
 
-                    Vec3d cP = ((SimpleTrack)t).isColliding((Sphere) e);
+                    Pair<Vec3d, Boolean> cP = ((Track)t).isColliding((Sphere) e);
+
                     if (cP != null) {
-                        ((SimpleTrack)t).performCollision((Sphere) e, cP);
+                        ((Track)t).performCollision((Sphere) e, cP.getKey(), cP.getValue());
                     }
                 }
             }

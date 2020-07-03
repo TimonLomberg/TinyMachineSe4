@@ -1,10 +1,16 @@
 package entities;
 
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Shape;
 import main.Simulation;
+import misc.Drawable;
 import misc.Utils;
 import misc.Vec3d;
 
-public class Sphere extends Entity {
+public class Sphere extends Entity implements Drawable {
 
     private double diameter;
 
@@ -79,5 +85,12 @@ public class Sphere extends Entity {
         }
 
         return null;
+    }
+
+
+    @Override
+    public Shape intoShape(Color c) {
+        return new Circle(this.getPos().x, (this.getPos().z)*-1,
+                this.getDiameter()/2, c);
     }
 }

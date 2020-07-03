@@ -1,66 +1,174 @@
 package entities;
 
-import main.Simulation;
-import misc.Polynomial3d;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Shape;
+import javafx.util.Pair;
+import misc.Drawable;
 import misc.Vec3d;
 
-import java.util.Optional;
+public class Track implements Cloneable, Drawable {
+    // private Polynomial3d trackFunc;
 
-public class Track implements Cloneable{
-    protected Polynomial3d trackFunc;
-    protected double[] xIntervall;
-    protected double[] yIntervall;
+    private double slope;
+    private double zOffset;
 
-    public Track(Polynomial3d trackFunc, double[] xInterval) {
-        this.trackFunc = trackFunc;
-        this.xIntervall = xInterval;
+    private double[] xInterval;
+
+    public Track(double c, double s, double[] xInterval) {
+        this.setZOffset(c);
+        this.setSlope(s);
+        this.xInterval = xInterval;
+    }
+
+    public Track clone() {
+        return new Track(zOffset, slope, xInterval.clone());
     }
 
     @Override
-    public Track clone() throws CloneNotSupportedException {
-        Track clone = new Track(trackFunc, xIntervall);
-
-        return clone;
+    public Shape intoShape(Color c) {
+        Line line = new Line(this.minBound(), -this.heightAt(this.minBound()),
+                this.maxBound(), -this.heightAt(this.maxBound()));
+        line.setStroke(c);
+        line.setStrokeWidth(0.04);
+        
+        return line;
     }
 
-    public Vec3d normalAt(double x, double y) {
-        Vec3d v1 = new Vec3d(1, 0, this.trackFunc.derivedByXIgnoreY().valueAt(x, 0));
-        Vec3d v2 = new Vec3d(0, 1, this.trackFunc.derivedByYIgnoreX().valueAt(0, y));
+    public Pair<Vec3d, Boolean> isColliding(Sphere sphere) {
 
-        return v1.cross(v2).norm();
-    }
+        final Vec3d leftOfCenter = sphere.getPos().add(new Vec3d(-sphere.getDiameter()/2, 0, 0));
+        final Vec3d rightOfCenter = sphere.getPos().add(new Vec3d(sphere.getDiameter()/2, 0, 0));
 
-    public Polynomial3d getFunc() {
-        return this.trackFunc;
-    }
-
-    public double[] getXIntervall() {
-        return this.xIntervall;
-    }
-
-    public Vec3d isColliding(Sphere sphere) {
-        /*Vec3d pos = sphere.getPos();
-        Polynomial3d funcX = this.trackFunc.derivedByXIgnoreY();
-        Polynomial3d funcY = this.trackFunc.derivedByYIgnoreX();
-
-        double epsilon = Math.sqrt(
-                Math.pow(funcX.valueAt(pos.x, 0), 2)
-                + Math.pow(funcY.valueAt(0, pos.y), 2)
-                + 1
-        );
-
-        double funcValue = this.trackFunc.valueAt(sphere.getPos().x, sphere.getPos().y);
-        double r = sphere.getDiameter() / 2;
-
-        // Sphere kann nicht kollidieren, spart (hoffentlich) rechenaufwand
-        if (sphere.getPos().z - r > funcValue + (epsilon * 2 * r)) {
-            return false;
+        if ((leftOfCenter.x < this.minBound() && rightOfCenter.x < this.minBound())
+            || (leftOfCenter.x > this.maxBound() && rightOfCenter.x > this.maxBound())) {
+            return null;
         }
 
-        return false;*/
+        final Vec3d trackBeg = new Vec3d(
+                this.xInterval[0],
+                sphere.getPos().y,
+                this.heightAt(this.xInterval[0])
+        );
 
-        return null;
+        final Vec3d trackEnd = new Vec3d(
+                this.xInterval[1],
+                sphere.getPos().y,
+                this.heightAt(this.xInterval[1])
+        );
+
+        if (rightOfCenter.x > this.minBound() && sphere.getPos().x < this.minBound()) {
+            // must be edge collision if any
+
+            if (sphere.getPos().sub(trackBeg).length() <= sphere.getDiameter()/2) {
+                return new Pair<>(trackBeg, true);
+            } else {
+                return null;
+            }
+        }
+
+        if (leftOfCenter.x < this.maxBound() && sphere.getPos().x > this.maxBound()) {
+            // must be edge collision if any
+
+            if (sphere.getPos().sub(trackEnd).length() <= sphere.getDiameter()/2) {
+                return new Pair<>(trackEnd, true);
+            } else {
+                return null;
+            }
+        }
+
+        final Vec3d trackDir = trackEnd.sub(trackBeg);
+        final Vec3d trackBegToSphereCenter = sphere.getPos().sub(trackBeg);
+
+        final Vec3d projected = trackDir.scalarMul(trackBegToSphereCenter.dot(trackDir) / Math.pow(trackDir.length(), 2));
+
+        final Vec3d collPos = trackBeg.add(projected);
+
+        final Vec3d trackToSphere = sphere.getPos().sub(collPos);
+
+        if (trackToSphere.length() <= sphere.getDiameter() / 2) {
+            return new Pair<>(collPos, false);
+        } else {
+            return null;
+        }
     }
 
+    // wenn kolidiert mit cond1
+    public void performCollision(Sphere sphere, Vec3d collPos, boolean wasEdgyCollision) {
+        /* correct for sphere possibly being inside track */
 
+        /* calculate correnction factor */
+        final Vec3d trackToSphere = sphere.getPos().sub(collPos);
+        final double correction = (sphere.getDiameter()/2) - sphere.getPos().sub(collPos).length();
+
+        // set correct position
+        sphere.setPos(sphere.getPos().add(trackToSphere.norm().scalarMul(correction)));
+
+
+        // 'korregierter' Betrag ||velo|| der Geschwindigkeit
+        // mit  accel = (current_velo^2 - actual_velo^2) / 2traveled_dist gelöst für start_velo
+        // also actual_velo = sqrt( current_velo^2 - 2 * accel * traveled_dist )
+        final double shouldBeVel = Math.sqrt( Math.pow(sphere.getVelo().length(), 2) - 2 * sphere.getAccel().length() * correction );
+
+        sphere.setVelo(sphere.getVelo().norm().scalarMul(shouldBeVel));
+
+        /* do actual collision calculations */
+
+        if (wasEdgyCollision) {
+            final Vec3d vNorm = sphere.getPos().sub(collPos).norm();
+            final Vec3d out = sphere.getVelo().sub( vNorm.scalarMul( sphere.getVelo().dot(vNorm) * 2) );
+
+            sphere.setVelo(out);
+        } else {
+            final Vec3d sphereCenterToCollPos = collPos.sub(sphere.getPos());
+
+            final Vec3d sphereCenterToTrackInDirOfVel = sphere.getVelo().scalarMul(
+                    sphereCenterToCollPos.lengthSquared() / sphere.getVelo().norm().dot(sphereCenterToCollPos));
+
+
+            final Vec3d orthVelComp = sphereCenterToCollPos.norm().scalarMul(
+                    sphere.getVelo().dot(sphereCenterToCollPos.norm())
+            );
+
+            // orthogonalen anteil umkehren
+            sphere.setVelo(sphere.getVelo().sub(orthVelComp.scalarMul(2)));
+        }
+    }
+
+    public double heightAt(double x) {
+        return (slope() * x) + zOffset();
+    }
+
+    public double minBound() {
+        return xInterval[0];
+    }
+
+    public void setMinBound(double min) {
+        this.xInterval[0] = min;
+    }
+
+    public double maxBound() {
+        return xInterval[1];
+    }
+
+    public void setMaxBound(double max) {
+        this.xInterval[1] = max;
+    }
+
+    public double slope() {
+        return slope;
+    }
+
+    public void setSlope(double slope) {
+        this.slope = slope;
+    }
+
+    public double zOffset() {
+        return zOffset;
+    }
+
+    public void setZOffset(double zOffset) {
+        this.zOffset = zOffset;
+    }
 }

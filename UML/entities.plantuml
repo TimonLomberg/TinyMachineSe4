@@ -69,7 +69,7 @@ title __ENTITIES's Class Diagram__\n
 
   namespace  {
     namespace ntities {
-      class entities.SimpleTrack {
+      class entities.Track {
           + SimpleTrack()
           + isColliding()
           + performCollision()
@@ -115,7 +115,7 @@ title __ENTITIES's Class Diagram__\n
   entities.Rectangle -up-|> entities.Entity
   entities.Rectangle o-- misc.Vec3d : dimensions
   entities.Rectangle o-- misc.Vec3d : normal
-  entities.SimpleTrack -up-|> entities.Track
+  entities.Track -up-|> entities.Track
   entities.Sphere -up-|> entities.Entity
   entities.Track o-- misc.Polynomial3d : trackFunc
 

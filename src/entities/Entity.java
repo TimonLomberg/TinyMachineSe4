@@ -18,9 +18,6 @@ public abstract class Entity {
         this.velo = velo;
         this.accel = accel;
         this.mass = mass;
-
-
-
     }
 
     public Vec3d getPos() { return this.pos; }
