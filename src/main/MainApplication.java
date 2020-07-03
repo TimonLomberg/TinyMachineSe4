@@ -225,8 +225,11 @@ public class MainApplication extends Application {
                     BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
                     CornerRadii.EMPTY, new BorderWidths(2), Insets.EMPTY)));
             container.setOnMouseClicked(event -> {
-                if(e instanceof Track)
+                if(e instanceof Track) {
                     simulation.addTracks(((Track) e).clone());
+                    simPane.getChildren().clear();
+                    drawAllShapes();
+                }
                 else if(e instanceof Marble)
                     throw new NotImplementedException();
             });
