@@ -30,6 +30,7 @@ import misc.Drawable;
 import misc.Utils;
 import misc.Vec3d;
 import org.jetbrains.annotations.NotNull;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 
@@ -100,13 +101,13 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        initializeAll(primaryStage);
+        initialize(primaryStage);
 
         setTickTimer();
 
     }
 
-    private void initializeAll(Stage primaryStage) {
+    private void initialize(Stage primaryStage) {
 
         addSamples();
 
@@ -114,13 +115,11 @@ public class MainApplication extends Application {
 
         initializeUI(primaryStage, borderPane);
 
-        initialize();
-    }
-
-    public void initialize() {
         simulation = new Simulation();
+
         reset();
     }
+
 
     private void setTickTimer() {
         AnimationTimer timer = new AnimationTimer() {
@@ -142,7 +141,7 @@ public class MainApplication extends Application {
         timer.start();
     }
 
-    public static void tick(double deltaTick, GraphicsContext gc) {
+    private static void tick(double deltaTick, GraphicsContext gc) {
         simPane.getChildren().clear();
         drawAllShapes();
         simulation.tick(deltaTick);
@@ -225,7 +224,12 @@ public class MainApplication extends Application {
             container.setBorder(new Border(new BorderStroke(Color.ORANGERED, Color.ORANGERED, Color.ORANGERED, Color.ORANGERED,
                     BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
                     CornerRadii.EMPTY, new BorderWidths(2), Insets.EMPTY)));
-
+            container.setOnMouseClicked(event -> {
+                if(e instanceof Track)
+                    simulation.addTracks(((Track) e).clone());
+                else if(e instanceof Marble)
+                    throw new NotImplementedException();
+            });
 
             if (e instanceof Track) {
                 Track st = (Track) e;
@@ -470,7 +474,8 @@ public class MainApplication extends Application {
         });
     }
 
-    private void defineButtonEvents(DropShadow ds, Button startButton, Button resetButton, VBox elementsBox) {
+    private void defineButtonEvents(DropShadow ds, Button startButton, Button resetButton, VBox elementsBox ) {
+
 
 
         startButton.setOnMouseEntered(event -> startButton.setBackground(new Background(new BackgroundFill(Color.ORANGERED, CornerRadii.EMPTY, Insets.EMPTY))));
