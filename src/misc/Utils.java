@@ -1,6 +1,10 @@
 package misc;
 
 import entities.Rectangle;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
 public final class Utils {
 
@@ -46,5 +50,26 @@ public final class Utils {
     public static void panic(String msg) {
         System.err.println("Panic: " + msg);
         System.exit(1);
+    }
+
+    public static void setElementsColorDisabled(VBox p) {
+        for(Node n : p.getChildren()) {
+            StackPane h = (StackPane) n;
+
+            h.setBackground(new Background(new BackgroundFill(Color.DARKGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+        }
+    }
+
+    public static void setElementsColorEnabled(VBox p) {
+        for(Node n : p.getChildren()) {
+            StackPane h = (StackPane) n;
+
+            h.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        }
+    }
+
+    public static void clipChildren(Region region, double simPanelSizeX, double simPanelSizeY) {
+        final javafx.scene.shape.Rectangle clippingPlane = new javafx.scene.shape.Rectangle(simPanelSizeX, simPanelSizeY);
+        region.setClip(clippingPlane);
     }
 }
