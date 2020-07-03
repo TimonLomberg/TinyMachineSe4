@@ -6,7 +6,7 @@ import misc.Vec3d;
 
 import java.util.Optional;
 
-public class Track {
+public class Track implements Cloneable{
     protected Polynomial3d trackFunc;
     protected double[] xIntervall;
     protected double[] yIntervall;
@@ -14,6 +14,13 @@ public class Track {
     public Track(Polynomial3d trackFunc, double[] xInterval) {
         this.trackFunc = trackFunc;
         this.xIntervall = xInterval;
+    }
+
+    @Override
+    public Track clone() throws CloneNotSupportedException {
+        Track clone = new Track(trackFunc, xIntervall);
+
+        return clone;
     }
 
     public Vec3d normalAt(double x, double y) {
@@ -54,4 +61,6 @@ public class Track {
 
         return null;
     }
+
+
 }

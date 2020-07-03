@@ -1,6 +1,7 @@
 package main;
 
 import entities.*;
+import entities.Rectangle;
 import javafx.animation.AnimationTimer;
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
@@ -15,6 +16,9 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
@@ -37,6 +41,7 @@ import javafx.util.Duration;
 import misc.DrawCircle;
 import misc.Vec3d;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +57,7 @@ public class MainApplication extends Application {
 
     static Simulation simulation; // Don't edit!!
 
-    private static final double tickFrequency = 500;
+    private static final double tickFrequency = 200;
     private static final double canvasScaleX = 200;
     private static final double canvasScaleY = 200;
 
@@ -69,8 +74,7 @@ public class MainApplication extends Application {
     private static Marble marble1, marble2;
     private static SimpleTrack track1, track2;
 
-    private static ArrayList<Object> samples = new ArrayList<Object>() {
-    };
+    private static ArrayList<Object> samples = new ArrayList<Object>() {};
 
     private static HashMap<Object, String> objNames = new HashMap<>();
 
@@ -138,13 +142,10 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        samples.add(new SimpleTrack(-1.1, -0.1, new double[]{0.1, 1.0}));
-        samples.add(new SimpleTrack(100, 0.1, new double[]{0.1, 1.0}));
+        samples.add(new SimpleTrack(-1.2, -0.1, new double[]{0.1, 1.0}));
+        samples.add(new SimpleTrack(-1, 0.1, new double[]{0.1, 1.0}));
         samples.add(new SimpleTrack(-1, 1, new double[]{0.1, 0.5}));
-        samples.add(new SimpleTrack(-1.1, -0.1, new double[]{0.1, 1.0}));
-        samples.add(new SimpleTrack(-1.1, -0.1, new double[]{0.1, 1.0}));
-        samples.add(new SimpleTrack(-1.1, -0.1, new double[]{0.1, 1.0}));
-        samples.add(new SimpleTrack(-1.1, -0.1, new double[]{0.1, 1.0}));
+
 
 
 
@@ -190,7 +191,6 @@ public class MainApplication extends Application {
 
         ScrollPane elementsScrollPane = new ScrollPane();
         elementsScrollPane.setContent(elementsBox);
-        elementsScrollPane.setPannable(true);
         elementsScrollPane.setBackground(Background.EMPTY);
         elementsScrollPane.setBorder(new Border(new BorderStroke(Color.DARKORANGE, BorderStrokeStyle.SOLID,
                 CornerRadii.EMPTY, new BorderWidths(3))));
@@ -223,9 +223,11 @@ public class MainApplication extends Application {
                 if(simulation.isPaused())  {
                     simulation.setPaused(false);
                     startButton.setText("Pause");
+                    setElementsColorDisabled(elementsBox);
                 } else {
                     simulation.setPaused(true);
                     startButton.setText("Start/Unpause");
+                    setElementsColorEnabled(elementsBox);
                 }
 
             }
@@ -266,6 +268,7 @@ public class MainApplication extends Application {
                 reset();
                 simulation.setPaused(true);
                 startButton.setText("Start/Unpause");
+                setElementsColorEnabled(elementsBox);
             }
         });
         resetButton.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -312,44 +315,6 @@ public class MainApplication extends Application {
 
 
 
-        /*
-        Canvas canvas = new Canvas(1080, 970);
-        final double[] orgSceneX = new double[1];
-        final double[] orgSceneY = new double[1];
-        final double[] orgTranslateX = new double[1];
-        final double[] orgTranslateY = new double[1];
-        canvas.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                orgSceneX[0] = event.getSceneX();
-                orgSceneY[0] = event.getSceneY();
-                orgTranslateX[0] = ((Canvas)(event.getSource())).getTranslateX();
-                orgTranslateY[0] = ((Canvas) (event.getSource())).getTranslateY();
-            }
-        });
-        canvas.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                double offsetX = event.getSceneX() - orgSceneX[0];
-                double offsetY = event.getSceneY() - orgSceneY[0];
-                double newTranslateX = orgTranslateX[0] + offsetX;
-                double newTranslateY = orgTranslateY[0] + offsetY;
-
-                ((Canvas) (event.getSource())).getGraphicsContext2D().translate(newTranslateX, newTranslateY);  //transform the object
-                //((Canvas) (event.getSource())).setTranslateY(newTranslateY);
-            }
-        });
-
-
-        AnchorPane.setLeftAnchor(textField, 0.0);
-        AnchorPane.setRightAnchor(textField, 0.0);
-        AnchorPane.setBottomAnchor(textField, 0.0);
-
-
-        AnchorPane anchorPane = new AnchorPane();
-        anchorPane.getChildren().addAll(canvas, textField);
-        */
-
         Pane simPane = new Pane();
         MainApplication.simPane = simPane;
         simPane.setPrefHeight(simPanelSizeY);
@@ -388,6 +353,22 @@ public class MainApplication extends Application {
                     BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
                     CornerRadii.EMPTY, new BorderWidths(2), Insets.EMPTY)));
 
+            container.setOnMouseClicked((a) -> {
+                if (simulation.isPaused()) {
+                    if(e instanceof SimpleTrack) {
+                        try {
+                            simulation.addTracks(((SimpleTrack) e).clone());
+                            drawAllShapesNew();
+                        } catch (CloneNotSupportedException cloneNotSupportedException) {
+
+                        }
+                    } else if(e instanceof Marble) {
+
+                    }
+                }
+
+            });
+
             if(e instanceof Track) {
                 SimpleTrack st = (SimpleTrack) e;
                 objNames.put(e, e.toString());
@@ -402,8 +383,8 @@ public class MainApplication extends Application {
                         0.5*(-st.getFunc().valueAt(st.getXIntervall()[1],0) + st.getFunc().valueAt(st.getXIntervall()[0],0)) + offsetY
                 );
                 //line = new Line(0, 0, 1.0, 1.0);
-                System.out.println("x1: " + st.getXIntervall()[0] + " y1: " + st.getFunc().valueAt(st.getXIntervall()[0],0));
-                System.out.println("x2: " + st.getXIntervall()[1] + " y2: " + st.getFunc().valueAt(st.getXIntervall()[1],0));
+                //System.out.println("x1: " + st.getXIntervall()[0] + " y1: " + st.getFunc().valueAt(st.getXIntervall()[0],0));
+                //System.out.println("x2: " + st.getXIntervall()[1] + " y2: " + st.getFunc().valueAt(st.getXIntervall()[1],0));
 
                 //Line line = new Line(0,0,0.1,0.1);
 
@@ -417,6 +398,8 @@ public class MainApplication extends Application {
                 //Text t = new Text(e.toString());
                 //.setFont(new Font(Font.getDefault().getFamily(), 16));
                 //container.getChildren().add(t);
+
+
 
 
             }
@@ -613,9 +596,50 @@ public class MainApplication extends Application {
         Line line = new Line(st.getXIntervall()[0], -st.getFunc().valueAt(st.getXIntervall()[0], 0),
                 st.getXIntervall()[1], -st.getFunc().valueAt(st.getXIntervall()[1], 0));
         line.setStroke(c);
-        line.setStrokeWidth(0.02);
+        line.setStrokeWidth(0.04);
         simPane.getChildren().add(line);
         line.getTransforms().add(simSceneScale);
+
+        final double[] orgSceneX = new double[1];
+        final double[] orgSceneY = new double[1];
+        line.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (simulation.isPaused()) {
+                    orgSceneX[0] = event.getSceneX();
+                    orgSceneY[0] = event.getSceneY();
+                    ((Line) event.getSource()).toFront();
+                }
+            }
+        });
+        line.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (simulation.isPaused() && event.getSource() instanceof Shape) {
+                    double offsetX = (event.getSceneX() - orgSceneX[0]) / simSceneScale.getX();
+                    double offsetY = (event.getSceneY() - orgSceneY[0]) / simSceneScale.getY();
+                    Line c = (Line) (event.getSource());
+
+                    c.setStartX((c.getStartX() + offsetX));
+                    c.setStartY((c.getStartY() + offsetY));
+                    c.setEndX(c.getEndX() + offsetX);
+                    c.setEndY(c.getEndY() + offsetY);
+
+                    //c.setTranslateX(offsetX);
+                    //c.setTranslateY(offsetY);
+
+                    //c.relocate(c.getCenterX() + offsetX, c.getCenterY() + offsetY);
+
+                    orgSceneX[0] = event.getSceneX();
+                    orgSceneY[0] = event.getSceneY();
+
+                    st.getXIntervall()[0] = st.getXIntervall()[0] + offsetX;
+                    st.getXIntervall()[1] = st.getXIntervall()[1] + offsetX;
+                    st.getFunc().xFactors()[0] = st.getFunc().xFactors()[0] - offsetY;
+                }
+            }
+        });
+
 
         if (simulation.isPaused()) {
             Text t = new Text(objNames.get(st));
@@ -671,6 +695,21 @@ public class MainApplication extends Application {
 
 
 
+    }
+
+    private static void setElementsColorDisabled(VBox p) {
+        for(Node n : p.getChildren()) {
+            StackPane h = (StackPane) n;
+
+            h.setBackground(new Background(new BackgroundFill(Color.DARKGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+        }
+    }
+    private static void setElementsColorEnabled(VBox p) {
+        for(Node n : p.getChildren()) {
+            StackPane h = (StackPane) n;
+
+            h.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        }
     }
 
 

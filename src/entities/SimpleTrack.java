@@ -4,10 +4,19 @@ import main.Simulation;
 import misc.Polynomial3d;
 import misc.Vec3d;
 
-public class SimpleTrack extends Track {
+public class SimpleTrack extends Track implements Cloneable{
 
     public SimpleTrack(double c, double s, double[] xInterval) {
         super(new Polynomial3d(new double[]{ c, s }, new double[]{}), xInterval);
+    }
+
+    private SimpleTrack(Polynomial3d poly, double[] xInterval) {
+        super(poly, xInterval);
+    }
+
+    @Override
+    public SimpleTrack clone() throws CloneNotSupportedException {
+        return new SimpleTrack(super.trackFunc, super.xIntervall);
     }
 
     @Override
