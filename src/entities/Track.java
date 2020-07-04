@@ -169,8 +169,7 @@ public class Track implements Cloneable, Drawable {
 
             // orthogonalen anteil umkehren
             sphere.setVelo( sphere.getVelo().sub(orthVelComp.scalarMul(2)) );
-
-            sphere.setAccel(sphere.getAccel().add( Simulation.GRAV_VEC.projectOnto( collPos.sub(this.startPoint()) ) ));
+           // sphere.setAccel( Simulation.GRAV_VEC.projectOnto( this.endPoint().sub(this.startPoint()) ) );
         }
     }
 
