@@ -349,13 +349,65 @@ public class MainApplication extends Application {
             simSpeedSlider.setMin(1);
             simSpeedSlider.setMax(600);
             simSpeedSlider.setValue(300);
-            simSpeedSlider.setShowTickLabels(true);
+            //simSpeedSlider.setShowTickLabels(true);
+            simSpeedSlider.setPadding(new Insets(10,0,0,0));
+
+            Text sliderSizeText = new Text("Marble Size");
+            sliderSizeText.setFont(new Font(18));
+            sliderSizeText.setFill(Color.DARKORANGE);
 
             marbleSizeSlider = new Slider();
             marbleSizeSlider.setMin(0.01);
             marbleSizeSlider.setMax(1);
             marbleSizeSlider.setValue(0.5);
-            marbleSizeSlider.setShowTickLabels(true);
+            marbleSizeSlider.setPadding(new Insets(10,0,0,0));
+            //marbleSizeSlider.setShowTickLabels(true);
+
+            Text sliderVelocityText = new Text("Marble Velocity");
+            sliderVelocityText.setFont(new Font(18));
+            sliderVelocityText.setFill(Color.DARKORANGE);
+
+            Text velocityText = new Text("Marble Velocity");
+            velocityText.setFont(new Font(18));
+            velocityText.setFill(Color.DARKORANGE);
+
+            HBox velocityValuesBox = new HBox();
+            velocityValuesBox.setFillHeight(true);
+            velocityValuesBox.setAlignment(Pos.BASELINE_CENTER);
+
+
+
+            TextField xDirectionField = new TextField();
+            xDirectionField.setMaxWidth(80);
+            TextField zDirectionField = new TextField();
+            zDirectionField.setMaxWidth(80);
+
+            xDirectionField.focusedProperty().addListener((arg, oldValue, newValue) -> {
+                if (currentMarble != null) {
+                    if(oldValue && !newValue && xDirectionField.getText().matches("-?[0-9]+(\\.[0-9]+)?")) {
+                       Vec3d vel = currentMarble.getVelo().clone();
+                       vel.x = Double.parseDouble(xDirectionField.getText());
+                       currentMarble.setVelo(vel);
+                    } else if(!oldValue && newValue) {
+                        xDirectionField.setText(currentMarble.getVelo().x + "");
+                        zDirectionField.setText(currentMarble.getVelo().z + "");
+                    }
+                }
+            });
+            zDirectionField.focusedProperty().addListener((arg, oldValue, newValue) -> {
+                if (currentMarble != null) {
+                    if(oldValue && !newValue && zDirectionField.getText().matches("-?[0-9]+(\\.[0-9]+)?")) {
+                        Vec3d vel = currentMarble.getVelo().clone();
+                        vel.z = Double.parseDouble(zDirectionField.getText());
+                        currentMarble.setVelo(vel);
+                    } else if(!oldValue && newValue) {
+                        xDirectionField.setText(currentMarble.getVelo().x + "");
+                        zDirectionField.setText(currentMarble.getVelo().z + "");
+                    }
+                }
+            });
+
+            velocityValuesBox.getChildren().addAll(xDirectionField, zDirectionField);
 
             DropShadow ds = new DropShadow();
             ds.setBlurType(BlurType.GAUSSIAN);
@@ -396,7 +448,8 @@ public class MainApplication extends Application {
                     CornerRadii.EMPTY, new BorderWidths(5), Insets.EMPTY)));
             controlPanel.setFillWidth(true);
             controlPanel.getChildren().addAll(controlsText, spacer1, elementsText, spacer5, elementsBox, elementsScrollPane,
-                    sliderSpeedText, simSpeedSlider, marbleSizeSlider, startButton, spacer2, resetButton, spacer3);
+                    sliderSpeedText, simSpeedSlider, sliderSizeText,  marbleSizeSlider, velocityText, velocityValuesBox,
+                    startButton, spacer2, resetButton, spacer3);
 
 
             defineButtonEvents(ds, startButton, resetButton, elementsBox, simSpeedSlider, marbleSizeSlider);
@@ -602,7 +655,12 @@ public class MainApplication extends Application {
         Circle circle = new Circle(s.getPos().x, (s.getPos().z) * -1,
                 s.getDiameter() / 2, c);
 
-        Text veloText = new Text(s.getPos().x * simSceneScale.getX(), -s.getPos().z * simSceneScale.getY(), s.getVelo().toPrettyString());
+        Text veloText = new Text(
+                s.getPos().x * simSceneScale.getX(),
+                -s.getPos().z * simSceneScale.getY(),
+                s.getVelo().toPrettyString()
+        );
+        veloText.setMouseTransparent(true);
 
         simPane.getChildren().add(circle);
         simPane.getChildren().add(veloText);
