@@ -5,6 +5,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
 import javafx.util.Pair;
+import main.Simulation;
 import misc.Drawable;
 import misc.Vec3d;
 
@@ -13,7 +14,7 @@ public class Track implements Cloneable, Drawable {
     private double slope;
     private double zOffset;
     private double[] xInterval;
-    private double elasticity = 1;
+    private double elasticity = 0.8;
 
     private void recalculateFunc(Vec3d a, Vec3d b) {
         final double xDiff = b.x - a.x;
@@ -146,7 +147,7 @@ public class Track implements Cloneable, Drawable {
         // also actual_velo = sqrt( current_velo^2 - 2 * accel * traveled_dist )
         final double shouldBeVel = Math.sqrt( Math.pow(sphere.getVelo().length(), 2) - 2 * sphere.getAccel().length() * correction );
 
-        sphere.setVelo( sphere.getVelo().norm().scalarMul(shouldBeVel).scalarMul(elasticity) );
+        sphere.setVelo( sphere.getVelo().norm().scalarMul(shouldBeVel) );
 
         /* do actual collision calculations */
 
@@ -167,7 +168,9 @@ public class Track implements Cloneable, Drawable {
             );
 
             // orthogonalen anteil umkehren
-            sphere.setVelo( sphere.getVelo().sub(orthVelComp.scalarMul(2)).scalarMul(elasticity) );
+            sphere.setVelo( sphere.getVelo().sub(orthVelComp.scalarMul(2)) );
+
+            sphere.setAccel(sphere.getAccel().add( Simulation.GRAV_VEC.projectOnto( collPos.sub(this.startPoint()) ) ));
         }
     }
 
