@@ -603,7 +603,11 @@ public class MainApplication extends Application {
         Circle circle = new Circle(s.getPos().x, (s.getPos().z) * -1,
                 s.getDiameter() / 2, c);
 
+        Text veloText = new Text(s.getPos().x * simSceneScale.getX(), -s.getPos().z * simSceneScale.getY(), s.getVelo().toPrettyString());
+
         simPane.getChildren().add(circle);
+        simPane.getChildren().add(veloText);
+
         circle.getTransforms().add(simSceneScale);
 
         final double[] orgSceneX = new double[1];
@@ -624,6 +628,9 @@ public class MainApplication extends Application {
                 c1.setCenterX((c1.getCenterX() + offsetX));
                 c1.setCenterY((c1.getCenterY() + offsetY));
 
+                veloText.setX(veloText.getX() + offsetX * simSceneScale.getX());
+                veloText.setY(veloText.getY() + offsetY * simSceneScale.getY());
+                veloText.toFront();
 
                 orgSceneX[0] = event.getSceneX();
                 orgSceneY[0] = event.getSceneY();
