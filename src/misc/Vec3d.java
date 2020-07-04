@@ -2,7 +2,7 @@ package misc;
 
 import org.jetbrains.annotations.NotNull;
 
-public class Vec3d {
+public class Vec3d implements Cloneable {
     public double x;
     public double y;
     public double z;
@@ -23,6 +23,11 @@ public class Vec3d {
         this.x = other.x;
         this.y = other.y;
         this.z = other.z;
+    }
+
+    @Override
+    protected Vec3d clone() {
+        return new Vec3d(x, y, z);
     }
 
     public static Vec3d nullvec() {
