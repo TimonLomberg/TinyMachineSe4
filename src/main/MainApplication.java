@@ -3,15 +3,15 @@ package main;
 import entities.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToolBar;
+import javafx.scene.control.*;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
@@ -43,7 +43,7 @@ public class MainApplication extends Application {
     ////////////////////////////////////////
 
 
-    private static final double tickFrequency = 200;
+    private static double tickFrequency = 200;
     private static final double simPanelSizeX = 1000f;
     private static final double simPanelSizeY = 800f;
     private static final Scale simSceneScale = new Scale(200, 200);
@@ -66,6 +66,8 @@ public class MainApplication extends Application {
     private static Track track1, track2;
     private static final ArrayList<Drawable> samples = new ArrayList<>();
 
+    private static Entity currentMarble;
+
     private void buildSimulation() {
 
         track1 = new Track(-1.1, -0.1, new double[]{0.1, 1.0});
@@ -84,9 +86,11 @@ public class MainApplication extends Application {
     }
 
     private void addSamples() {
+        samples.add(new Marble(new Vec3d(1,0,-1), 1, 0.2));
         samples.add(new Track(-1.2, -0.1, new double[]{0.1, 1.0}));
         samples.add(new Track(-1, 0.1, new double[]{0.1, 1.0}));
         samples.add(new Track(-1, 1, new double[]{0.1, 0.5}));
+        samples.add(new Track(new Vec3d(1, 0, -1), new Vec3d(1.01, 0, -1.8)));
     }
 
 
@@ -178,13 +182,14 @@ public class MainApplication extends Application {
         ToolBar toolBar = buildToolBar();
 
 
-        ControlPanel controllPanel = new ControlPanel().invoke();
-        VBox elementsBox = controllPanel.getElementsBox();
-        ScrollPane elementsScrollPane = controllPanel.getElementsScrollPane();
-        VBox controlPanel = controllPanel.getControlPanel();
+        ControlPanel controlPanel = new ControlPanel().invoke();
+        Slider marbleSizeSlider = controlPanel.getMarbleSizeSlider();
+        VBox elementsBox = controlPanel.getElementsBox();
+        ScrollPane elementsScrollPane = controlPanel.getElementsScrollPane();
+        VBox controlPanelBox = controlPanel.getControlPanel();
 
 
-        SimulationPanel simulationPanel = new SimulationPanel(toolBar, controlPanel).invoke();
+        SimulationPanel simulationPanel = new SimulationPanel(toolBar, controlPanelBox).invoke();
         Pane simPane = simulationPanel.getSimPane();
         BorderPane borderPane = simulationPanel.getBorderPane();
 
@@ -216,8 +221,11 @@ public class MainApplication extends Application {
         for (Drawable e : samples) {
             final double psm = 0.5;
 
+
+
+
             StackPane container = new StackPane();
-            container.setMinHeight(100);
+            container.setMinHeight(175);
             container.prefWidthProperty().bind(elementsScrollPane.widthProperty());
             container.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
             container.setAlignment(Pos.CENTER);
@@ -230,9 +238,14 @@ public class MainApplication extends Application {
                     simPane.getChildren().clear();
                     drawAllShapes();
                 }
-                else if(e instanceof Marble)
-                    throw new NotImplementedException();
+                else if(e instanceof Marble) {
+                    simulation.addEntities(((Marble) e).clone());
+                    simPane.getChildren().clear();
+                    drawAllShapes();
+                }
+
             });
+
 
             if (e instanceof Track) {
                 Track st = (Track) e;
@@ -251,9 +264,25 @@ public class MainApplication extends Application {
                 line.setStrokeWidth(0.02);
                 line.setStroke(Color.RED);
                 line.getTransforms().add(simSceneScale);
-                line.toFront();
+
 
                 container.getChildren().add(line);
+            } else if(e instanceof Marble) {
+                System.out.println("drew marble");
+
+                Marble marble = (Marble) e;
+
+                double offsetX = 0.2;
+                double offsetY = -0.1;
+
+                Circle circle = new Circle(0,0,marble.getDiameter()/2);
+
+                circle.getTransforms().add(new Scale(0.75,0.75));
+                circle.setFill(Color.LIGHTBLUE);
+                circle.getTransforms().add(simSceneScale);
+
+
+                container.getChildren().add(circle);
             }
 
             elementsBox.getChildren().add(container);
@@ -264,6 +293,7 @@ public class MainApplication extends Application {
         private VBox elementsBox;
         private ScrollPane elementsScrollPane;
         private VBox controlPanel;
+        private Slider marbleSizeSlider;
 
         public VBox getElementsBox() {
             return elementsBox;
@@ -276,6 +306,8 @@ public class MainApplication extends Application {
         public VBox getControlPanel() {
             return controlPanel;
         }
+
+        public Slider getMarbleSizeSlider() {return marbleSizeSlider;}
 
         public ControlPanel invoke() {
             Text controlsText = new Text("Controls");
@@ -316,6 +348,17 @@ public class MainApplication extends Application {
             sliderSpeedText.setFont(new Font(18));
             sliderSpeedText.setFill(Color.DARKORANGE);
 
+            Slider simSpeedSlider = new Slider();
+            simSpeedSlider.setMin(1);
+            simSpeedSlider.setMax(600);
+            simSpeedSlider.setValue(300);
+            simSpeedSlider.setShowTickLabels(true);
+
+            marbleSizeSlider = new Slider();
+            marbleSizeSlider.setMin(0.01);
+            marbleSizeSlider.setMax(1);
+            marbleSizeSlider.setValue(0.5);
+            marbleSizeSlider.setShowTickLabels(true);
 
             DropShadow ds = new DropShadow();
             ds.setBlurType(BlurType.GAUSSIAN);
@@ -356,10 +399,10 @@ public class MainApplication extends Application {
                     CornerRadii.EMPTY, new BorderWidths(5), Insets.EMPTY)));
             controlPanel.setFillWidth(true);
             controlPanel.getChildren().addAll(controlsText, spacer1, elementsText, spacer5, elementsBox, elementsScrollPane,
-                    sliderSpeedText, startButton, spacer2, resetButton, spacer3);
+                    sliderSpeedText, simSpeedSlider, marbleSizeSlider, startButton, spacer2, resetButton, spacer3);
 
 
-            defineButtonEvents(ds, startButton, resetButton, elementsBox);
+            defineButtonEvents(ds, startButton, resetButton, elementsBox, simSpeedSlider, marbleSizeSlider);
 
 
             return this;
@@ -477,12 +520,14 @@ public class MainApplication extends Application {
         });
     }
 
-    private void defineButtonEvents(DropShadow ds, Button startButton, Button resetButton, VBox elementsBox ) {
+    private void defineButtonEvents(DropShadow ds, Button startButton, Button resetButton, VBox elementsBox,
+                                    Slider slider, Slider marbleSizeSlider) {
 
 
-
-        startButton.setOnMouseEntered(event -> startButton.setBackground(new Background(new BackgroundFill(Color.ORANGERED, CornerRadii.EMPTY, Insets.EMPTY))));
-        startButton.setOnMouseExited(event -> startButton.setBackground(new Background(new BackgroundFill(Color.DARKORANGE, CornerRadii.EMPTY, Insets.EMPTY))));
+        startButton.setOnMouseEntered(event -> startButton.setBackground(new Background(new BackgroundFill(
+                Color.ORANGERED, CornerRadii.EMPTY, Insets.EMPTY))));
+        startButton.setOnMouseExited(event -> startButton.setBackground(new Background(new BackgroundFill(
+                Color.DARKORANGE, CornerRadii.EMPTY, Insets.EMPTY))));
         startButton.setOnMousePressed((e) -> {
             startButton.setEffect(null);
         });
@@ -519,6 +564,18 @@ public class MainApplication extends Application {
         });
         resetButton.setOnMouseEntered(event -> resetButton.setBackground(new Background(new BackgroundFill(Color.ORANGERED, CornerRadii.EMPTY, Insets.EMPTY))));
         resetButton.setOnMouseExited(event -> resetButton.setBackground(new Background(new BackgroundFill(Color.DARKORANGE, CornerRadii.EMPTY, Insets.EMPTY))));
+
+        slider.setOnMouseDragged(event -> {
+            tickFrequency = slider.getMax() + slider.getMin() - slider.getValue();
+        });
+
+        marbleSizeSlider.setOnMouseDragged(event -> {
+            if(currentMarble != null) {
+                ((Marble) currentMarble).setDiameter(marbleSizeSlider.getValue());
+                simPane.getChildren().clear();
+                drawAllShapes();
+            }
+        });
     }
 
 
@@ -574,6 +631,10 @@ public class MainApplication extends Application {
 
                 s.setPos(new Vec3d(c1.getCenterX(), 0, (c1.getCenterY()) * -1));
             }
+        });
+        circle.setOnMouseClicked(event -> {
+            currentMarble = s;
+
         });
     }
 
