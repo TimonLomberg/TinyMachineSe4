@@ -38,6 +38,10 @@ public class Vec3d {
         return "(" + this.x + ", " + this.y + ", " + this.z + ")";
     }
 
+    public String toPrettyString() {
+        return String.format("(%.3f, %.3f, %.3f)", this.x, this.y, this.z);
+    }
+
     public double lengthSquared() {
         return this.dot(this);
     }
