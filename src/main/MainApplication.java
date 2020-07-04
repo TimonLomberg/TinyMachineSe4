@@ -251,7 +251,7 @@ public class MainApplication extends Application {
 
 
                 double offsetX = 0.2;
-                double offsetY = -0.1;
+                double offsetY = 0.2;
                 Shape line = new Line(
                         -1 * (st.maxBound() - st.minBound()) + offsetX,
                         -1 * (-st.heightAt(st.maxBound()) + st.heightAt(st.minBound())) + offsetY,
@@ -267,8 +267,6 @@ public class MainApplication extends Application {
 
                 container.getChildren().add(line);
             } else if(e instanceof Marble) {
-                System.out.println("drew marble");
-
                 Marble marble = (Marble) e;
 
                 double offsetX = 0.2;
@@ -609,6 +607,7 @@ public class MainApplication extends Application {
         simPane.getChildren().add(veloText);
 
         circle.getTransforms().add(simSceneScale);
+        s.setFxShape(circle);
 
         final double[] orgSceneX = new double[1];
         final double[] orgSceneY = new double[1];
@@ -640,7 +639,12 @@ public class MainApplication extends Application {
         });
         circle.setOnMouseClicked(event -> {
             currentMarble = s;
-
+            s.getFxShape().setFill(Color.ORANGE);
+            for(Entity m : simulation.getEntitesWithoutSelf(s)) {
+                if(m instanceof Marble) {
+                    m.getFxShape().setFill(Color.LIGHTSKYBLUE);
+                }
+            }
         });
     }
 

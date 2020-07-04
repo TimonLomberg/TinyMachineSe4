@@ -1,5 +1,6 @@
 package entities;
 
+import javafx.scene.shape.Shape;
 import main.Simulation;
 import misc.Vec3d;
 
@@ -13,6 +14,8 @@ public abstract class Entity {
     protected double mass;
     protected double gravMul = 1;
 
+    protected Shape fxShape;
+
     public Entity(Vec3d pos, Vec3d velo, Vec3d accel, double mass) {
         this.pos = pos;
         this.velo = velo;
@@ -23,12 +26,14 @@ public abstract class Entity {
     public Vec3d getPos() { return this.pos; }
     public Vec3d getVelo() { return this.velo; }
     public Vec3d getAccel() { return this.accel; }
-    public double getGravMul() {return gravMul; }
+    public double getGravMul() { return gravMul; }
+    public Shape getFxShape() { return fxShape; }
 
     public void setGravMul(double gravMul) {this.gravMul = gravMul; }
     public void setPos(Vec3d pos) { this.pos = pos; }
     public void setVelo(Vec3d velo) { this.velo = velo; }
     public void setAccel(Vec3d accel) { this.accel = accel; }
+    public void setFxShape(Shape shape) {this.fxShape = shape; }
 
     public double getMass() { return this.mass; }
     public void setMass(double mass) { this.mass = mass; }
