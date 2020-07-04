@@ -588,7 +588,8 @@ public class MainApplication extends Application {
 
         for (Entity e : simulation.getEntities()) {
             if (e instanceof Sphere) {
-                drawSphere((Sphere) e, Color.LIGHTSKYBLUE);
+                if(e == currentMarble) drawSphere((Sphere) e, Color.ORANGE);
+                else drawSphere((Sphere) e, Color.LIGHTSKYBLUE);
             } else if (e instanceof Rectangle) {
                 //drawRectangle((Rectangle) e, Color.DARKOLIVEGREEN);
             } else {
