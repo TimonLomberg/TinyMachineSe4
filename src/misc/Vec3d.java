@@ -26,7 +26,7 @@ public class Vec3d implements Cloneable {
     }
 
     @Override
-    protected Vec3d clone() {
+    public Vec3d clone() {
         return new Vec3d(x, y, z);
     }
 
