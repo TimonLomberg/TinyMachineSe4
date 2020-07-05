@@ -55,6 +55,12 @@ public class Vec3d implements Cloneable {
         return Math.sqrt(this.lengthSquared());
     }
 
+    /**
+     * this / this.lenght()
+     * sonderfall wenn this = 0
+     *
+     * @return wenn this = 0 dann 0 sonst this / this.length()
+     */
     public Vec3d norm() {
         final double len = this.length();
         if (len != 0) {
@@ -64,6 +70,12 @@ public class Vec3d implements Cloneable {
         }
     }
 
+    /**
+     * Vektor addition: this + other, wobei this und other unverändert bleiben
+     *
+     * @param other rhs von rechnung
+     * @return this + other
+     */
     public Vec3d add(@NotNull Vec3d other) {
         Vec3d ret = Vec3d.from(other);
 
@@ -74,6 +86,12 @@ public class Vec3d implements Cloneable {
         return ret;
     }
 
+    /**
+     * Vektor subtraktion: this - other, wobei this und other unverändert bleiben.
+     *
+     * @param other rhs von rechnung
+     * @return this - other
+     */
     public Vec3d sub(@NotNull Vec3d other) {
         Vec3d ret = Vec3d.from(this);
 
@@ -84,10 +102,22 @@ public class Vec3d implements Cloneable {
         return ret;
     }
 
+    /**
+     * Punktprodukt von this und other
+     *
+     * @param other rechte seite des Punktproduktes
+     * @return this . other
+     */
     public double dot(@NotNull Vec3d other) {
         return this.x * other.x + this.y * other.y + this.z * other.z;
     }
 
+    /**
+     * Kreuzprodukt von this und other, wobei sowohl this und other unverändert bleiben.
+     *
+     * @param other rechte seite des Kreuzproduktes
+     * @return this x other
+     */
     public Vec3d cross(@NotNull Vec3d other) {
         double a = this.y * other.z - this.z * other.y;
         double b = this.z * other.x - this.x * other.z;
@@ -96,6 +126,12 @@ public class Vec3d implements Cloneable {
         return new Vec3d(a, b, c);
     }
 
+    /**
+     * Multiplikation mit einem Skalar, wobei this unverändert bleibt.
+     *
+     * @param lambda skalar
+     * @return Modifizierter Vektor
+     */
     public Vec3d scalarMul(double lambda) {
         Vec3d ret = Vec3d.from(this);
 
@@ -106,6 +142,12 @@ public class Vec3d implements Cloneable {
         return ret;
     }
 
+    /**
+     * Division mit einem Skalar, wobei this unverändert bleibt.
+     *
+     * @param lambda skalar
+     * @return modifizierter Vector
+     */
     public Vec3d scalarDiv(double lambda) {
         Vec3d ret = Vec3d.from(this);
 
@@ -116,6 +158,12 @@ public class Vec3d implements Cloneable {
         return ret;
     }
 
+    /**
+     * Projeziert this auf b wobei this unverändert bleibt.
+     *
+     * @param b projektionsrichtung
+     * @return neuer (projezierter) Vektor
+     */
     public Vec3d projectOnto(Vec3d b) {
         // todo testing
         return b.scalarMul( this.dot( b.norm() ) );

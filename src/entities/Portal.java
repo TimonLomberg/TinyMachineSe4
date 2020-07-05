@@ -2,6 +2,11 @@ package entities;
 
 import misc.Vec3d;
 
+/**
+ * Ein Track, welcher bei kollision die Murmel an ein
+ * anderes Portal teleportiert und  Geschwindigkeit in Richtung
+ * von otherEnd.outgoing zeigen lässt, anstatt normale Kollision durchzuführen.
+ */
 public class Portal extends Track {
     private Vec3d outgoing;
     private Portal otherEnd;
@@ -11,6 +16,14 @@ public class Portal extends Track {
         this.outgoing = outgoing;
     }
 
+    /**
+     * Teleportiert die Sphere in die Mitte von otherEnd (mit Abstand von sphere.getDiameter()/2 zum Portal).
+     * Die Geschwindigkeit zeigt danach in Richtung von otherEnd.outgoing.
+     *
+     * @param sphere Die Sphere mit dem die kollision stattgefunden hat
+     * @param _collPos unbenutzt
+     * @param _wasEdgyCollision unbenutzt
+     */
     @Override
     public void performCollision(Sphere sphere, Vec3d _collPos, boolean _wasEdgyCollision) {
         if (otherEnd != null) {

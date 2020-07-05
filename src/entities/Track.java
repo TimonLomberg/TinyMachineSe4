@@ -6,6 +6,10 @@ import javafx.scene.shape.Shape;
 import javafx.util.Pair;
 import misc.Vec3d;
 
+/**
+ * Klasse modelliert Murmelbahn mit der Spheres kollidieren können.
+ * Dieses Objekt ist statisch, kann also nicht durch kollisionen bewegt werden.
+ */
 public class Track implements Cloneable {
     
     private double slope;
@@ -34,6 +38,14 @@ public class Track implements Cloneable {
         this.thisLine = thisLine;
     }
 
+    /**
+     * Die Interne Repr von Track ist eine lineare Funktion
+     * der Form y = ax + b mit grenzen Für die x werte.
+     * Diese Funktion berechnet die interne Repr aus zwei Punkten.
+     *
+     * @param a Neuer Startpunkt
+     * @param b Neuer Endpunkt
+     */
     private void recalculateFunc(Vec3d a, Vec3d b) {
         if (b.x < a.x) {
             final Vec3d tmp = b;
@@ -62,10 +74,16 @@ public class Track implements Cloneable {
         recalculateFunc(a, b);
     }
 
+    /**
+     * @return Vec3d der auf den Startpunkt des Tracks zeigt
+     */
     public Vec3d startPoint() {
         return new Vec3d(this.minBound(), 0, this.heightAt(this.minBound()));
     }
 
+    /**
+     * @return Vec3d der auf den Endpunkt des Tracks zeigt
+     */
     public Vec3d endPoint() {
         return new Vec3d(this.maxBound(), 0, this.heightAt(this.maxBound()));
     }
@@ -98,6 +116,12 @@ public class Track implements Cloneable {
         return line;
     }
 
+    /**
+     * Rotiert kompletten Track um den Startpunkt herum.
+     * Der Winkel zwischen (b' - a') und (a - b) ist alpha.
+     *
+     * @param alpha Winkel (in Rad) um den der Track rotiert werden soll
+     */
     public void rotateAroundStartPoint(double alpha) {
         final Vec3d startp = this.startPoint();
         final Vec3d dir = endPoint().sub(startp);
@@ -114,6 +138,13 @@ public class Track implements Cloneable {
         this.recalculateFunc(startp, startp.add(newdir));
     }
 
+
+    /**
+     * Überprüft ob sphere mit this kollidiert.
+     *
+     * @param sphere Die Sphere mit der die Kollision überprüft werden soll
+     * @return (Vec3d, bool) wobei Vec3d der Kollisionspunkt ist und bool ob die Kollision an einer Ecke stattfand
+     */
     public Pair<Vec3d, Boolean> isColliding(Sphere sphere) {
 
         final Vec3d leftOfCenter = sphere.getPos().add(new Vec3d(-sphere.getDiameter()/2, 0, 0));
@@ -172,7 +203,19 @@ public class Track implements Cloneable {
         }
     }
 
-    // wenn kolidiert mit cond1
+    /**
+     * Wirkt Effekte auf Kugel, wenn diese Funktion aufgerufen wird, wird davon ausgegangen,
+     * dass die Kollision tatsächlich stattgefunden hat.
+     *
+     * Diese Funktion wird erst die Position und Velocity der Kugel korrigieren,
+     * falls die Kollision zu spät erkannt wurde und die Kugel schon leicht im Track
+     * steckt. (Dieser Effekt ist beim Zeichnen allerdings nicht sichtbar, weshalb es so aussieht als
+     * würde die Kugel im Track stecken)
+     *
+     * @param sphere Die Sphere mit dem die kollision stattgefunden hat
+     * @param collPos Die Kollisionsposition
+     * @param wasEdgyCollision Ob Kollision an einer Ecke stattgefunden hat
+     */
     public void performCollision(Sphere sphere, Vec3d collPos, boolean wasEdgyCollision) {
         /* correct for sphere possibly being inside track */
 

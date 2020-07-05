@@ -7,6 +7,9 @@ import main.Simulation;
 import misc.Utils;
 import misc.Vec3d;
 
+/**
+ * Rundes kollisionsobjekt, mit Masse; nicht statisch
+ */
 public class Sphere extends Entity {
 
     private double diameter;
@@ -24,6 +27,11 @@ public class Sphere extends Entity {
         this.diameter = diameter;
     }
 
+    /**
+     * Wirkt effekte der Kollision zwischen this und other (elastischer Stoß).
+     *
+     * @param other Das andere Objekt mit dem this kollidiert ist
+     */
     @Override
     public void performCollision(Entity other) {
         if (other instanceof Sphere) {
@@ -57,6 +65,13 @@ public class Sphere extends Entity {
         }
     }
 
+
+    /**
+     * Sucht erstes Objekt der Simulation mit dem eine kollision erkannt wurde.
+     *
+     * @param sim Die Simulation mit Tracks, Murmeln, etc.
+     * @return Entity Der Entity mit dem eine Kollision stattgefunden hat.
+     */
     @Override
     public Entity findColliding(Simulation sim) {
         for (Entity e : sim.getEntitesWithoutSelf(this)) {

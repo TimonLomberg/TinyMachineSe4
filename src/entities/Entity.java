@@ -6,6 +6,10 @@ import misc.Vec3d;
 
 import java.util.Optional;
 
+/**
+ * Basisklasse für alle beweglichen, masse-besitzenden
+ * Objekte der Simulation
+ */
 public abstract class Entity {
     protected Vec3d pos;
     protected Vec3d velo;
@@ -43,9 +47,29 @@ public abstract class Entity {
         this.velo = this.velo.add( normVec.scalarMul( this.velo.dot(normVec) * (-2 + loss)  ) );
     }
 
+    /**
+     * Wendet Effekte einer Kollision mit einem anderen Entity an
+     *
+     * @param other Kollidierender
+     */
     public abstract void performCollision(Entity other);
+
+    /**
+     * Findet kollidierendes Objekt in Simulation
+     *
+     * @param sim Die Simulation
+     * @return das Kollidierende Objekt
+     */
     public abstract Entity findColliding(Simulation sim);
 
+    /**
+     * überprüft ob kollisionen stattgefunden haben, führt
+     * dann performCollision aus und setzt danach entsprechend die position
+     * und velocity neu.
+     *
+     * @param sim Die Simulation
+     * @param dT Vergangenene Zeit seit dem letzen Update
+     */
     public void update(Simulation sim, double dT) {
         Entity collider = this.findColliding(sim);
 
