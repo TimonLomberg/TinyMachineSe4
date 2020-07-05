@@ -7,7 +7,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
@@ -50,16 +49,13 @@ public class MainApplication extends Application {
     /*          Simulation Members        */
     ////////////////////////////////////////
 
-    static GraphicsContext gc; // Don't edit!!
-    static Pane simPane;
-    private static Marble marble1;
+    static Pane simPane; // Don't edit!!
 
 
     ////////////////////////////////////////
     /*         Simulation Building        */
     ////////////////////////////////////////
 
-    private static Track track1;
     private static final ArrayList<Object> samples = new ArrayList<>();
 
     private static Entity currentMarble;
@@ -67,34 +63,58 @@ public class MainApplication extends Application {
 
     private void buildSimulation() {
 
-        track1 = new Track(-4, 0, new double[]{0, 20});
+        Track t1 = new Track(new Vec3d(0.36,0,-0.3), new Vec3d(1.26,0, -0.53));
+        Track t2 = new Track(new Vec3d(1.31,0,-1.44), new Vec3d(2.31,0, -1.44));
+        t2.setElasticity(0.8);
+        t2.setTrackColor(Color.LAWNGREEN);
+        Track t3 = new Track(new Vec3d(2.66,0,-1.02), new Vec3d(3.55,0, -1.11));
+        Track t4 = new Track(new Vec3d(3.74,0,-1.42), new Vec3d(4.14,0, -1.02));
+        Track t5 = new Track(new Vec3d(2.68,0,-1.77), new Vec3d(3.68,0, -1.77));
+        Track t6 = new Track(new Vec3d(1.51,0,-2.03), new Vec3d(2.51,0, -2.03));
+        Track t7 = new Track(new Vec3d(0.89,0,-2.20), new Vec3d(1.30,0, -2.60));
+        Track t8 = new Track(new Vec3d(1.81,0,-3.76), new Vec3d(2.81,0, -3.76));
+        t8.setElasticity(1.1);
+        t8.setTrackColor(Color.BLUEVIOLET);
 
-        marble1 = new Marble(1, 0.2);
-        marble1.setPos(new Vec3d(.5, 0, -1.5));
+        simulation.addTracks(t1,t2,t3,t4,t5,t6,t7,t8);
 
-        simulation.addEntities(marble1);
-        simulation.addTracks(track1);
+        Marble marble1 = new Marble(1, 0.2);
+        marble1.setPos(new Vec3d(0.46, 0, -0.17));
+        Marble marble2 = new Marble(1,0.2);
+        marble2.setPos(new Vec3d(1.765, 0, -1.915));
 
-        Portal a = new Portal(new Vec3d(1, 0, -3), new Vec3d(3, 0, -3), new Vec3d(0, 0, 1));
-        Portal b = new Portal(new Vec3d(1, 0, -2), new Vec3d(3, 0, -2), new Vec3d(1, 0, 1));
+        simulation.addEntities(marble1, marble2);
+
+
+        Portal a = new Portal(new Vec3d(1.81, 0, -2.1), new Vec3d(2.81, 0, -2.1), new Vec3d(0, 0, 1));
+        Portal b = new Portal(new Vec3d(3, 0, -2.1), new Vec3d(4, 0, -2.1), new Vec3d(0, 0, 1));
 
         a.setOtherEnd(b);
         b.setOtherEnd(a);
 
-
         simulation.addTracks(a, b);
+
+
+        simulation.addTracks(new Track(-4, 0, new double[]{0, 20}));
+
+
     }
 
     private void addSamples() {
+        Track t;
         samples.add(new Marble(new Vec3d(1,0,-1), 1, 0.2));
         samples.add(new Track(-1.2, -0.1, new double[]{0.1, 1.0}));
         samples.add(new Track(-1, 0.1, new double[]{0.1, 1.0}));
         samples.add(new Track(-1, 1, new double[]{0.1, 0.5}));
         samples.add(new Track(-1, -1, new double[]{0.1, 0.5}));
         samples.add(new Track(new Vec3d(1, 0, -1), new Vec3d(2, 0, -1)));
-        Track t = new Track(new Vec3d(1, 0, -1), new Vec3d(2, 0, -1));
+        t = new Track(new Vec3d(1, 0, -1), new Vec3d(2, 0, -1));
         t.setTrackColor(Color.LAWNGREEN);
         t.setElasticity(0.8);
+        samples.add(t);
+        t = new Track(new Vec3d(1, 0, -1), new Vec3d(2, 0, -1));
+        t.setTrackColor(Color.BLUE);
+        t.setElasticity(1.5);
         samples.add(t);
     }
 
@@ -143,14 +163,14 @@ public class MainApplication extends Application {
 
                 if (now - lastTick > 1000000000 / tickFrequency && !simulation.isPaused()) {
                     lastTick = now;
-                    tick(1 / tickFrequency, gc);
+                    tick(1 / tickFrequency);
                 }
             }
         };
         timer.start();
     }
 
-    private static void tick(double deltaTick, GraphicsContext gc) {
+    private static void tick(double deltaTick) {
         simPane.getChildren().clear();
         drawAllShapes();
         simulation.tick(deltaTick);

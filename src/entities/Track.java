@@ -11,7 +11,7 @@ public class Track implements Cloneable {
     private double slope;
     private double zOffset;
     private double[] xInterval;
-    private double elasticity = 0.5;
+    private double elasticity = 0.3;
     private Color trackColor = Color.RED;
 
 
@@ -69,7 +69,10 @@ public class Track implements Cloneable {
     }
 
     public Track clone() {
-        return new Track(zOffset, slope, xInterval.clone());
+        Track t = new Track(zOffset, slope, xInterval.clone());
+        t.setTrackColor(trackColor);
+        t.setElasticity(elasticity);
+        return t;
     }
 
     public void setElasticity(double value) {
@@ -189,7 +192,7 @@ public class Track implements Cloneable {
 
         if (wasEdgyCollision) {
             final Vec3d vNorm = sphere.getPos().sub(collPos).norm();
-            final Vec3d out = sphere.getVelo().sub( vNorm.scalarMul( sphere.getVelo().dot(vNorm) * 2) );
+            final Vec3d out = sphere.getVelo().sub( vNorm.scalarMul( sphere.getVelo().dot(vNorm) * 2 * elasticity) );
 
             sphere.setVelo(out);
         } else {
