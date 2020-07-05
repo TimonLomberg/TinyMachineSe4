@@ -16,6 +16,16 @@ public class Track implements Cloneable, Drawable {
     private double[] xInterval;
     private double elasticity = 0.8;
 
+    private Line thisLine;
+
+    public Line getThisLine() {
+        return thisLine;
+    }
+
+    public void setThisLine(Line thisLine) {
+        this.thisLine = thisLine;
+    }
+
     private void recalculateFunc(Vec3d a, Vec3d b) {
         final double xDiff = b.x - a.x;
         final double zDiff = b.z - a.z;

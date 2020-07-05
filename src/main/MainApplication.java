@@ -31,6 +31,7 @@ import misc.Utils;
 import misc.Vec3d;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 
@@ -46,6 +47,7 @@ public class MainApplication extends Application {
     private static final double simPanelSizeX = 1000f;
     private static final double simPanelSizeY = 800f;
     private static final Scale simSceneScale = new Scale(200, 200);
+    private static final boolean trackLabelVisible = false;
     static Simulation simulation; // Don't edit!!
 
 
@@ -66,21 +68,17 @@ public class MainApplication extends Application {
     private static final ArrayList<Drawable> samples = new ArrayList<>();
 
     private static Entity currentMarble;
+    private static Track currentTrack;
 
     private void buildSimulation() {
 
-        track1 = new Track(-1.1, -0.1, new double[]{0.1, 1.0});
-        track2 = new Track(-2, 0, new double[]{0, 20});
+        track1 = new Track(-4, 0, new double[]{0, 20});
 
+        marble1 = new Marble(1, 0.2);
+        marble1.setPos(new Vec3d(.5, 0, -1.5));
 
-        marble1 = new Marble(1, 0.1);
-        marble2 = new Marble(1, 0.2);
-        marble1.setPos(new Vec3d(.5, 0, -1.07));
-        marble2.setPos(new Vec3d(.5, 0, -1.5));
-        simulation.addEntities(marble2);
-        simulation.addTracks(track1, track2);
-        marble1.setVelo(new Vec3d(0.05, 0, 0));
-
+        simulation.addEntities(marble1);
+        simulation.addTracks(track1);
 
     }
 
@@ -89,7 +87,8 @@ public class MainApplication extends Application {
         samples.add(new Track(-1.2, -0.1, new double[]{0.1, 1.0}));
         samples.add(new Track(-1, 0.1, new double[]{0.1, 1.0}));
         samples.add(new Track(-1, 1, new double[]{0.1, 0.5}));
-        samples.add(new Track(new Vec3d(1, 0, -1), new Vec3d(1.01, 0, -1.8)));
+        samples.add(new Track(-1, -1, new double[]{0.1, 0.5}));
+        samples.add(new Track(new Vec3d(1, 0, -1), new Vec3d(2, 0, -1)));
     }
 
 
@@ -722,9 +721,30 @@ public class MainApplication extends Application {
 
     private static void drawSimpleTrack(Track st, Color c) {
         Shape line = st.intoShape(c);
+        st.setThisLine((Line) line);
+
+        line.getTransforms().add(simSceneScale);
+
+        DecimalFormat df = new DecimalFormat("0.00");
+
+        Text trackText = new Text(st.startPoint().x * simSceneScale.getX(),-st.startPoint().z * simSceneScale.getY(),
+                "(" + df.format(st.startPoint().x) + ", " + df.format(st.startPoint().z) + ") | (" +
+                        df.format(st.endPoint().x) + ", " + df.format(st.endPoint().z) + ")");
+        trackText.setMouseTransparent(true);
+
 
         simPane.getChildren().add(line);
-        line.getTransforms().add(simSceneScale);
+        simPane.getChildren().add(trackText);
+
+        line.setOnMouseClicked(event -> {
+            currentTrack = st;
+            line.setStroke(Color.ORANGE);
+            for(Track t : simulation.getTracks()) {
+                if(st != t  && t.getThisLine() != null) {
+                    t.getThisLine().setStroke(Color.RED);
+                }
+            }
+        });
 
         defineTrackDragNDrop(st, line);
     }
