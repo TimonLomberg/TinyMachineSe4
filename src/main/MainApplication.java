@@ -385,7 +385,21 @@ public class MainApplication extends Application {
             velocityValuesBox.setFillHeight(true);
             velocityValuesBox.setAlignment(Pos.BASELINE_CENTER);
 
+            Text rotateText = new Text("Rotate Track");
+            rotateText.setFont(new Font(18));
+            rotateText.setFill(Color.DARKORANGE);
 
+            TextField rotateTextField = new TextField();
+            rotateTextField.focusedProperty().addListener((arg, oldValue, newValue) -> {
+                if (currentTrack != null) {
+                    if(oldValue && !newValue && rotateTextField.getText().matches("-?[0-9]+(\\.[0-9]+)?")) {
+                        currentTrack.rotateAroundStartPoint(Double.parseDouble(rotateTextField.getText())/180*Math.PI);
+                        rotateTextField.setText("");
+                        simPane.getChildren().clear();
+                        drawAllShapes();
+                    }
+                }
+            });
 
             TextField xDirectionField = new TextField();
             xDirectionField.setMaxWidth(80);
@@ -459,10 +473,11 @@ public class MainApplication extends Application {
             controlPanel.setFillWidth(true);
             controlPanel.getChildren().addAll(controlsText, spacer1, elementsText, spacer5, elementsBox, elementsScrollPane,
                     sliderSpeedText, simSpeedSlider, sliderSizeText,  marbleSizeSlider, sliderMassText, marbleMassSlider,
-                    velocityText, velocityValuesBox, startButton, spacer2, resetButton, spacer3);
+                    rotateText, rotateTextField, velocityText, velocityValuesBox, startButton, spacer2, resetButton, spacer3);
 
 
-            defineButtonEvents(ds, startButton, resetButton, elementsBox, simSpeedSlider, marbleSizeSlider, marbleMassSlider);
+            defineButtonEvents(ds, startButton, resetButton, elementsBox,
+                    simSpeedSlider, marbleSizeSlider, marbleMassSlider);
 
 
             return this;
@@ -642,6 +657,8 @@ public class MainApplication extends Application {
                 ((Marble) currentMarble).setMass(marbleSizeSlider.getValue());
             }
         });
+
+
     }
 
 
