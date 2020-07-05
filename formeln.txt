@@ -62,7 +62,7 @@ Formeln:
             Tatsächliche Kollision:
                 Eckenkollision:
                     Sei vNorm: Vec = normalized(s.pos - collisionPos)
-                    s.vel' = s.vel - vNorm * (s.vel * vNorm) * 2
+                    s.vel' = s.vel - vNorm * (s.vel * vNorm) * 2 * elasticity
                 
                 Flächenkollision:
                     Sei orthVel: Vec = normalized(collisionPos - s.pos) * (s.vel * (collisionPos - s.pos))
