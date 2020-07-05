@@ -1,22 +1,30 @@
 package entities;
 
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
 import javafx.util.Pair;
-import main.Simulation;
-import misc.Drawable;
 import misc.Vec3d;
 
-public class Track implements Cloneable, Drawable {
+public class Track implements Cloneable {
     
     private double slope;
     private double zOffset;
     private double[] xInterval;
-    private double elasticity = 0.8;
+    private double elasticity = 0.5;
+    private Color trackColor = Color.RED;
+
+
 
     private Line thisLine;
+
+    public Color getTrackColor() {
+        return trackColor;
+    }
+
+    public void setTrackColor(Color trackColor) {
+        this.trackColor = trackColor;
+    }
 
     public Line getThisLine() {
         return thisLine;
@@ -72,11 +80,10 @@ public class Track implements Cloneable, Drawable {
         return this.elasticity;
     }
 
-    @Override
-    public Shape intoShape(Color c) {
+    public Shape intoShape() {
         Line line = new Line(this.minBound(), -this.heightAt(this.minBound()),
                 this.maxBound(), -this.heightAt(this.maxBound()));
-        line.setStroke(c);
+        line.setStroke(trackColor);
         line.setStrokeWidth(0.04);
         
         return line;

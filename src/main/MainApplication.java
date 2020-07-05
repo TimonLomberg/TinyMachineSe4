@@ -3,12 +3,9 @@ package main;
 import entities.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -26,12 +23,10 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
-import misc.Drawable;
 import misc.Utils;
 import misc.Vec3d;
 import org.jetbrains.annotations.NotNull;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 
@@ -57,15 +52,15 @@ public class MainApplication extends Application {
 
     static GraphicsContext gc; // Don't edit!!
     static Pane simPane;
-    private static Marble marble1, marble2;
+    private static Marble marble1;
 
 
     ////////////////////////////////////////
     /*         Simulation Building        */
     ////////////////////////////////////////
 
-    private static Track track1, track2;
-    private static final ArrayList<Drawable> samples = new ArrayList<>();
+    private static Track track1;
+    private static final ArrayList<Object> samples = new ArrayList<>();
 
     private static Entity currentMarble;
     private static Track currentTrack;
@@ -89,6 +84,10 @@ public class MainApplication extends Application {
         samples.add(new Track(-1, 1, new double[]{0.1, 0.5}));
         samples.add(new Track(-1, -1, new double[]{0.1, 0.5}));
         samples.add(new Track(new Vec3d(1, 0, -1), new Vec3d(2, 0, -1)));
+        Track t = new Track(new Vec3d(1, 0, -1), new Vec3d(2, 0, -1));
+        t.setTrackColor(Color.LAWNGREEN);
+        t.setElasticity(0.8);
+        samples.add(t);
     }
 
 
@@ -216,7 +215,7 @@ public class MainApplication extends Application {
     }
 
     private void generatePreviewBox(VBox elementsBox, ScrollPane elementsScrollPane, Pane simPane) {
-        for (Drawable e : samples) {
+        for (Object e : samples) {
             final double psm = 0.5;
 
 
@@ -263,7 +262,7 @@ public class MainApplication extends Application {
 
                 line.getTransforms().add(new Scale(0.5, 0.5));
                 line.setStrokeWidth(0.02);
-                line.setStroke(Color.RED);
+                line.setStroke(st.getTrackColor());
                 line.getTransforms().add(simSceneScale);
 
 
@@ -669,7 +668,7 @@ public class MainApplication extends Application {
 
     private static void drawAllShapes() {
         for (Track t : simulation.getTracks()) {
-            drawSimpleTrack(t, Color.RED);
+            drawSimpleTrack(t);
         }
 
         for (Entity e : simulation.getEntities()) {
@@ -736,8 +735,8 @@ public class MainApplication extends Application {
         });
     }
 
-    private static void drawSimpleTrack(Track st, Color c) {
-        Shape line = st.intoShape(c);
+    private static void drawSimpleTrack(Track st) {
+        Shape line = st.intoShape();
         st.setThisLine((Line) line);
 
         line.getTransforms().add(simSceneScale);
@@ -754,6 +753,7 @@ public class MainApplication extends Application {
                 -st.startPoint().z * simSceneScale.getY(),
                 trackTextStr);
         trackText.setMouseTransparent(true);
+        trackText.toFront();
 
 
         simPane.getChildren().add(line);
@@ -764,7 +764,7 @@ public class MainApplication extends Application {
             line.setStroke(Color.ORANGE);
             for(Track t : simulation.getTracks()) {
                 if(st != t  && t.getThisLine() != null) {
-                    t.getThisLine().setStroke(Color.RED);
+                    t.getThisLine().setStroke(t.getTrackColor());
                 }
             }
         });
