@@ -172,7 +172,11 @@ public class Track implements Cloneable, Drawable {
         // also actual_velo = sqrt( current_velo^2 - 2 * accel * traveled_dist )
         final double shouldBeVel = Math.sqrt( Math.pow(sphere.getVelo().length(), 2) - 2 * sphere.getAccel().length() * correction );
 
-        sphere.setVelo( sphere.getVelo().norm().scalarMul(shouldBeVel) );
+        // ungenauigkeit in rechnung kann in seltenen edge cases zu NaN führen
+        if (!Double.isNaN(shouldBeVel)) {
+            sphere.setVelo( sphere.getVelo().norm().scalarMul(shouldBeVel) );
+        }
+
 
         /* do actual collision calculations */
 
@@ -184,17 +188,21 @@ public class Track implements Cloneable, Drawable {
         } else {
             final Vec3d sphereCenterToCollPos = collPos.sub(sphere.getPos());
 
-            final Vec3d sphereCenterToTrackInDirOfVel = sphere.getVelo().scalarMul(
-                    sphereCenterToCollPos.lengthSquared() / sphere.getVelo().norm().dot(sphereCenterToCollPos));
-
-
             final Vec3d orthVelComp = sphereCenterToCollPos.norm().scalarMul(
                     sphere.getVelo().dot(sphereCenterToCollPos.norm())
             );
 
-            // orthogonalen anteil umkehren
-            sphere.setVelo( sphere.getVelo().sub(orthVelComp.scalarMul(2)) );
-           // sphere.setAccel( Simulation.GRAV_VEC.projectOnto( this.endPoint().sub(this.startPoint()) ) );
+            final Vec3d parallelVelComp = sphere.getVelo().sub(orthVelComp);
+
+            // orthVelComp leicht reduzieren und umkehren
+            sphere.setVelo( orthVelComp.scalarMul(-elasticity).add(parallelVelComp) );
+
+
+            /* orthogonalen anteil umkehren
+            // sphere.setVelo( sphere.getVelo().sub(orthVelComp.scalarMul(2)).scalarMul(0.9) );
+
+            // sphere.setAccel( Simulation.GRAV_VEC.projectOnto( this.endPoint().sub(this.startPoint()) ) );
+            */
         }
     }
 

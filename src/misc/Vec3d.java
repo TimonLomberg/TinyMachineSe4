@@ -56,7 +56,12 @@ public class Vec3d implements Cloneable {
     }
 
     public Vec3d norm() {
-        return this.scalarDiv(this.length());
+        final double len = this.length();
+        if (len != 0) {
+            return this.scalarDiv(len);
+        } else {
+            return Vec3d.nullvec();
+        }
     }
 
     public Vec3d add(@NotNull Vec3d other) {
