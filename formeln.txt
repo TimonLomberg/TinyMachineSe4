@@ -81,7 +81,9 @@ Formeln:
         
         Sei p.partner.normal: Vec = normalized( (p.partner.end - p.partner.start) x (0, 1, 0) )
         
-        s.pos' = p.partner.start + ((p.partner.end - p.partner.begin) / 2) + (p.partner.normal * s.radius)
+        Sei trackNormal: Vec = (t.end - t.start) x (0, 1, 0)
+        
+        s.pos' = p.partner.start + ((p.partner.end - p.partner.begin) / 2) + (p.partner.normal.project_onto(trackNormal) * s.radius)
         
     
     
