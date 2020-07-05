@@ -75,8 +75,19 @@ public class MainApplication extends Application {
         Track t8 = new Track(new Vec3d(1.81,0,-3.76), new Vec3d(2.81,0, -3.76));
         t8.setElasticity(1.1);
         t8.setTrackColor(Color.BLUEVIOLET);
+        Track t9 = new Track(new Vec3d(3.08,0,-2.89), new Vec3d(3.48,0, -3.29));
+        t9.setTrackColor(Color.GREEN);
+        Track t10 = new Track(new Vec3d(3.64,0,-3.29), new Vec3d(4.04,0, -2.89));
+        t10.setTrackColor(Color.GREEN);
 
-        simulation.addTracks(t1,t2,t3,t4,t5,t6,t7,t8);
+        Portal a = new Portal(new Vec3d(1.81, 0, -2.1), new Vec3d(2.81, 0, -2.1), new Vec3d(0, 0, -1));
+        Portal b = new Portal(new Vec3d(3, 0, -2.1), new Vec3d(4, 0, -2.1), new Vec3d(0, 0, -1));
+        a.setTrackColor(Color.YELLOW);
+        b.setTrackColor(Color.YELLOW);
+        a.setOtherEnd(b);
+        b.setOtherEnd(a);
+
+        simulation.addTracks(t1,t2,t3,t4,t5,t6,t7,t8,a,b,t9,t10);
 
         Marble marble1 = new Marble(1, 0.2);
         marble1.setPos(new Vec3d(0.46, 0, -0.17));
@@ -86,18 +97,7 @@ public class MainApplication extends Application {
         simulation.addEntities(marble1, marble2);
 
 
-        Portal a = new Portal(new Vec3d(1.81, 0, -2.1), new Vec3d(2.81, 0, -2.1), new Vec3d(0, 0, 1));
-        Portal b = new Portal(new Vec3d(3, 0, -2.1), new Vec3d(4, 0, -2.1), new Vec3d(0, 0, 1));
-
-        a.setOtherEnd(b);
-        b.setOtherEnd(a);
-
-        simulation.addTracks(a, b);
-
-
         simulation.addTracks(new Track(-4, 0, new double[]{0, 20}));
-
-
     }
 
     private void addSamples() {
@@ -113,8 +113,8 @@ public class MainApplication extends Application {
         t.setElasticity(0.8);
         samples.add(t);
         t = new Track(new Vec3d(1, 0, -1), new Vec3d(2, 0, -1));
-        t.setTrackColor(Color.BLUE);
-        t.setElasticity(1.5);
+        t.setTrackColor(Color.BLUEVIOLET);
+        t.setElasticity(1.2);
         samples.add(t);
     }
 
@@ -785,7 +785,7 @@ public class MainApplication extends Application {
 
 
         simPane.getChildren().add(line);
-        simPane.getChildren().add(trackText);
+        if(trackLabelVisible) simPane.getChildren().add(trackText);
 
         line.setOnMouseClicked(event -> {
             currentTrack = st;
