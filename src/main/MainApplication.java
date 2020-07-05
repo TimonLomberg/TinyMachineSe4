@@ -742,11 +742,17 @@ public class MainApplication extends Application {
 
         line.getTransforms().add(simSceneScale);
 
-        DecimalFormat df = new DecimalFormat("0.00");
-
-        Text trackText = new Text(st.startPoint().x * simSceneScale.getX(),-st.startPoint().z * simSceneScale.getY(),
-                "(" + df.format(st.startPoint().x) + ", " + df.format(st.startPoint().z) + ") | (" +
-                        df.format(st.endPoint().x) + ", " + df.format(st.endPoint().z) + ")");
+        String trackTextStr = String.format("(%.2f; %.2f) | (%.2f; %.2f)",
+                st.startPoint().x,
+                st.startPoint().z,
+                st.endPoint().x,
+                st.endPoint().z
+        );
+        
+        Text trackText = new Text(
+                st.startPoint().x * simSceneScale.getX(),
+                -st.startPoint().z * simSceneScale.getY(),
+                trackTextStr);
         trackText.setMouseTransparent(true);
 
 

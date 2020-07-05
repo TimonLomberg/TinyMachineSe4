@@ -44,7 +44,7 @@ public class Vec3d implements Cloneable {
     }
 
     public String toPrettyString() {
-        return String.format("(%.3f, %.3f, %.3f)", this.x, this.y, this.z);
+        return String.format("(%.2f; %.2f; %.2f)", this.x, this.y, this.z);
     }
 
     public double lengthSquared() {
