@@ -24,7 +24,7 @@ public class Portal extends Track {
                             otherEnd.endPoint()
                                 .sub(otherEnd.startPoint())
                                 .scalarDiv(2)
-                                .add(trackNormal.norm().scalarMul(sphere.getDiameter()/1.8))
+                                .add(otherEnd.outgoing.projectOnto(trackNormal).norm().scalarMul(sphere.getDiameter()/2))
                     )
             );
         }
