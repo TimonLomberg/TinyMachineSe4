@@ -35,6 +35,12 @@ public class Track implements Cloneable {
     }
 
     private void recalculateFunc(Vec3d a, Vec3d b) {
+        if (b.x < a.x) {
+            final Vec3d tmp = b;
+            b = a;
+            a = tmp;
+        }
+
         final double xDiff = b.x - a.x;
         final double zDiff = b.z - a.z;
 
@@ -104,6 +110,7 @@ public class Track implements Cloneable {
                 dir.y,
                 dir.x * sina + dir.z * cosa
         );
+
         this.recalculateFunc(startp, startp.add(newdir));
     }
 
