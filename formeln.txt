@@ -1,0 +1,92 @@
+Formeln:
+    Sei s, s':  Sphere
+    
+    Sei t:       Track
+    Sei t.start: Vec   = Startpunkt von t
+    Sei t.end:   Vec   = Endpunkt von t
+    Sei t.minX:  Real  = t.start.x
+    Sei t.maxX:  Real  = t.end.x
+    
+    
+    
+    Sphere:
+        Sphere.findColliding():
+            || s.pos - s'.pos || <= s.radius + s'.radius
+                => kollision
+    
+        Sphere.performCollision():
+            Sei collPos: Vec = normalized(s'.pos - s.pos)
+        
+            acos( s.vel * collVec / ||s.vel|| ) <= Pi/2
+                => s kann Geschwindigkeit an s' abgeben
+        
+            s.vel'  = 2 * ((s.mass * s.vel) + (s'.mass * s'.vel)) / (s.mass + s'.mass) - s.vel
+            s'.vel' = 2 * ((s.mass * s.vel) + (s'.mass * s'.vel)) / (s.mass + s'.mass) - s'.vel
+    
+    
+    Track:
+        Track.isColliding():
+            Sei loc: Vec = s.pos - (s.radius, 0, 0)
+            Sei roc: Vec = s.pos + (s.radius, 0, 0)
+            
+            (loc.x < t.minX und roc.x < t.minX) oder (loc.x > t.maxX and roc.x > t.maxX) 
+                => Kugel kann nicht Kollidieren
+            
+            (roc > t.minX and s.pos.x < t.minX) oder (loc.x < t.maxX und s.pos.x > t.maxX) 
+                => Wenn Kollision dann definitiv Eckenkollision
+            
+            sonst normale kollision (wenn überhaupt kollision):
+            
+                Sei t.direction = t.end - t.start
+            
+                collisionsPos = t.start + (t.direction * ((s.pos - t.start) * t.direction) / ||t.direction||^2)
+                
+                wenn nun ||s.pos - collisionsPos|| < s.radius
+                    => kollision
+                sonst 
+                    => keine kollision
+            
+            
+        
+        Track.performCollision():
+            Korrektur Pos: (Kugel könnte eventuell wenn kollision erkannt wird schon im Track stecken, z.B. weil Tickrate zu niedrig)
+            
+                Sei korrekturFaktor: Real = s.radius - ||s.pos - collisionPos||
+                
+                s.pos' = s.pos + ( normalized(s.pos - collisionPos) * korrekturFaktor )
+                
+                
+                mit a = (v^2 - v'^2) / 2*d
+                    => s.vel' = normalized(s.vel) * sqrt( ||s.vel||^2 - 2*s.accel*korrekturFaktor )
+        
+            Tatsächliche Kollision:
+                Eckenkollision:
+                    Sei vNorm: Vec = normalized(s.pos - collisionPos)
+                    s.vel' = s.vel - vNorm * (s.vel * vNorm) * 2
+                
+                Flächenkollision:
+                    Sei orthVel: Vec = normalized(collisionPos - s.pos) * (s.vel * (collisionPos - s.pos))
+                    Sei parVel: Vec  = s.vel - orthVel
+                    
+                    s.vel' = (orthVel * -elasticity) + parVel
+    
+    
+    
+    Portal.performCollision():
+        Sei p:          Portal : Track
+        Sei p.partner:  Portal = Teleportationsziel von p
+        Sei p.outgoing: Vec    = Richtung der Geschwindigkeit beim Austritt aus p
+    
+        s.vel' = p.partner.outgoing * ||s.vel||
+        
+        Sei p.partner.normal: Vec = normalized( (p.partner.end - p.partner.start) x (0, 1, 0) )
+        
+        s.pos' = p.partner.start + ((p.partner.end - p.partner.begin) / 2) + (p.partner.normal * s.radius)
+        
+    
+    
+    
+    
+    
+            
+        
