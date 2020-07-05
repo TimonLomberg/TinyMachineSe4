@@ -72,6 +72,21 @@ public class Track implements Cloneable, Drawable {
         return line;
     }
 
+    public void rotateAroundStartPoint(double alpha) {
+        final Vec3d startp = this.startPoint();
+        final Vec3d dir = endPoint().sub(startp);
+
+        final double cosa = Math.cos(alpha);
+        final double sina = Math.sin(alpha);
+
+        final Vec3d newdir = new Vec3d(
+                dir.x * cosa - dir.z * sina,
+                dir.y,
+                dir.x * sina + dir.z * cosa
+        );
+        this.recalculateFunc(startp, startp.add(newdir));
+    }
+
     public Pair<Vec3d, Boolean> isColliding(Sphere sphere) {
 
         final Vec3d leftOfCenter = sphere.getPos().add(new Vec3d(-sphere.getDiameter()/2, 0, 0));
