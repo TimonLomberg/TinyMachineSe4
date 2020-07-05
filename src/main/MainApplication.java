@@ -75,6 +75,14 @@ public class MainApplication extends Application {
         simulation.addEntities(marble1);
         simulation.addTracks(track1);
 
+        Portal a = new Portal(new Vec3d(1, 0, -3), new Vec3d(3, 0, -3), new Vec3d(0, 0, 1));
+        Portal b = new Portal(new Vec3d(1, 0, -2), new Vec3d(3, 0, -2), new Vec3d(1, 0, 1));
+
+        a.setOtherEnd(b);
+        b.setOtherEnd(a);
+
+
+        simulation.addTracks(a, b);
     }
 
     private void addSamples() {
