@@ -118,3 +118,4 @@ hs_err_pid*
 /UML/
 TinyMachineSe4.iml
 .idea/misc.xml
+*.iml
