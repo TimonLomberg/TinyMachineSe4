@@ -232,15 +232,18 @@ public class MainApplication extends Application {
                     BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
                     CornerRadii.EMPTY, new BorderWidths(2), Insets.EMPTY)));
             container.setOnMouseClicked(event -> {
-                if(e instanceof Track) {
-                    simulation.addTracks(((Track) e).clone());
-                    simPane.getChildren().clear();
-                    drawAllShapes();
-                }
-                else if(e instanceof Marble) {
-                    simulation.addEntities(((Marble) e).clone());
-                    simPane.getChildren().clear();
-                    drawAllShapes();
+
+                if (simulation.isPaused()) {
+                    if(e instanceof Track) {
+                        simulation.addTracks(((Track) e).clone());
+                        simPane.getChildren().clear();
+                        drawAllShapes();
+                    }
+                    else if(e instanceof Marble) {
+                        simulation.addEntities(((Marble) e).clone());
+                        simPane.getChildren().clear();
+                        drawAllShapes();
+                    }
                 }
 
             });
@@ -341,7 +344,7 @@ public class MainApplication extends Application {
             elementsScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
 
-            Text sliderSpeedText = new Text("Speed");
+            Text sliderSpeedText = new Text("Simulation Speed");
             sliderSpeedText.setFont(new Font(18));
             sliderSpeedText.setFill(Color.DARKORANGE);
 
@@ -349,7 +352,6 @@ public class MainApplication extends Application {
             simSpeedSlider.setMin(1);
             simSpeedSlider.setMax(600);
             simSpeedSlider.setValue(300);
-            //simSpeedSlider.setShowTickLabels(true);
             simSpeedSlider.setPadding(new Insets(10,0,0,0));
 
             Text sliderSizeText = new Text("Marble Size");
@@ -361,7 +363,16 @@ public class MainApplication extends Application {
             marbleSizeSlider.setMax(1);
             marbleSizeSlider.setValue(0.5);
             marbleSizeSlider.setPadding(new Insets(10,0,0,0));
-            //marbleSizeSlider.setShowTickLabels(true);
+
+            Text sliderMassText = new Text("Marble Mass");
+            sliderMassText.setFont(new Font(18));
+            sliderMassText.setFill(Color.DARKORANGE);
+
+            Slider marbleMassSlider = new Slider();
+            marbleMassSlider.setMin(0.01);
+            marbleMassSlider.setMax(1);
+            marbleMassSlider.setValue(0.5);
+            marbleMassSlider.setPadding(new Insets(10,0,0,0));
 
             Text sliderVelocityText = new Text("Marble Velocity");
             sliderVelocityText.setFont(new Font(18));
@@ -448,11 +459,11 @@ public class MainApplication extends Application {
                     CornerRadii.EMPTY, new BorderWidths(5), Insets.EMPTY)));
             controlPanel.setFillWidth(true);
             controlPanel.getChildren().addAll(controlsText, spacer1, elementsText, spacer5, elementsBox, elementsScrollPane,
-                    sliderSpeedText, simSpeedSlider, sliderSizeText,  marbleSizeSlider, velocityText, velocityValuesBox,
-                    startButton, spacer2, resetButton, spacer3);
+                    sliderSpeedText, simSpeedSlider, sliderSizeText,  marbleSizeSlider, sliderMassText, marbleMassSlider,
+                    velocityText, velocityValuesBox, startButton, spacer2, resetButton, spacer3);
 
 
-            defineButtonEvents(ds, startButton, resetButton, elementsBox, simSpeedSlider, marbleSizeSlider);
+            defineButtonEvents(ds, startButton, resetButton, elementsBox, simSpeedSlider, marbleSizeSlider, marbleMassSlider);
 
 
             return this;
@@ -571,7 +582,7 @@ public class MainApplication extends Application {
     }
 
     private void defineButtonEvents(DropShadow ds, Button startButton, Button resetButton, VBox elementsBox,
-                                    Slider slider, Slider marbleSizeSlider) {
+                                    Slider slider, Slider marbleSizeSlider, Slider marbleMassSlider) {
 
 
         startButton.setOnMouseEntered(event -> startButton.setBackground(new Background(new BackgroundFill(
@@ -626,6 +637,12 @@ public class MainApplication extends Application {
                 drawAllShapes();
             }
         });
+
+        marbleMassSlider.setOnMouseDragged(event -> {
+            if(currentMarble != null) {
+                ((Marble) currentMarble).setMass(marbleSizeSlider.getValue());
+            }
+        });
     }
 
 
@@ -655,11 +672,7 @@ public class MainApplication extends Application {
         Circle circle = new Circle(s.getPos().x, (s.getPos().z) * -1,
                 s.getDiameter() / 2, c);
 
-        Text veloText = new Text(
-                s.getPos().x * simSceneScale.getX(),
-                -s.getPos().z * simSceneScale.getY(),
-                s.getVelo().toPrettyString()
-        );
+        Text veloText = new Text(s.getPos().x * simSceneScale.getX(),-s.getPos().z * simSceneScale.getY(),s.getVelo().toPrettyString());
         veloText.setMouseTransparent(true);
 
         simPane.getChildren().add(circle);
